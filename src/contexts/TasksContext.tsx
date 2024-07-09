@@ -29,23 +29,8 @@ const saveTasksToLocalStorage = (tasks: Task[]) => {
   localStorage.setItem('tasks', JSON.stringify(tasks));
 };
 
-const loadTasksFromLocalStorage = (): Task[] => {
-  const tasks = localStorage.getItem('tasks');
-  if (!tasks) return [];
-  try {
-    const parsedTasks: Task[] = JSON.parse(tasks);
-    return parsedTasks.map(task => ({
-      ...task,
-      dueDate: task.dueDate ? new Date(task.dueDate) : null,
-    }));
-  } catch (error) {
-    console.error('Failed to parse tasks from localStorage:', error);
-    return [];
-  }
-};
-
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasks, setTasks] = useState<Task[]>(() => loadTasksFromLocalStorage());
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
     saveTasksToLocalStorage(tasks);
@@ -54,10 +39,6 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const addTask = (task: Omit<Task, 'id'>) => {
     const newTask = { ...task, id: Date.now() };
     setTasks(prevTasks => [...prevTasks, newTask]);
-  };
-  
-  const deleteTask = (id: number) => {
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
   };
 
   const editTask = (updatedTask: Task) => {
