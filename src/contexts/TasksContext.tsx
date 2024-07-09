@@ -11,6 +11,7 @@ export interface Task {
 interface TasksContextType {
   tasks: Task[];
   addTask: (task: Omit<Task, 'id'>) => void;
+  deleteTask: (id: number) => void;
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -54,8 +55,12 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     setTasks(prevTasks => [...prevTasks, newTask]);
   };
 
+  const deleteTask = (id: number) => {
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+  };
+
   return (
-    <TasksContext.Provider value={{ tasks, addTask }}>
+    <TasksContext.Provider value={{ tasks, addTask, deleteTask }}>
       {children}
     </TasksContext.Provider>
   );

@@ -1,14 +1,6 @@
 import { Button, Group } from "@mantine/core";
-import { useState } from "react";
-import ToDoForm from "./ToDoForm";
+import { Task } from "../contexts/TasksContext";
 
-interface Task {
-  id: number;
-  title: string;
-  summary: string;
-  dueDate: Date | null;
-  priority: "High" | "Medium" | "Low";
-}
 
 interface TaskItemProps {
   task: Task;
@@ -16,8 +8,6 @@ interface TaskItemProps {
 
 const TaskItem = ({ task }: TaskItemProps) => {
   
-  const [editModalOpened, setEditModalOpened] = useState(false);
-
   return (
     <div className="taskItem">
       <h3>{task.title}</h3>
@@ -32,12 +22,6 @@ const TaskItem = ({ task }: TaskItemProps) => {
         </Button>
         <Button>Edit</Button>
       </Group>
-      {editModalOpened && (
-        <ToDoForm
-          opened={editModalOpened}
-          setOpened={setEditModalOpened}
-        />
-      )}
     </div>
   );
 };
