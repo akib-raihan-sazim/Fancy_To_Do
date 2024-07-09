@@ -5,9 +5,8 @@ import {
   Button,
   Group,
   Select,
-  Popover,
 } from "@mantine/core";
-import { DatePicker } from "@mantine/dates";
+import { DateInput } from "@mantine/dates";
 import { useTasks } from "../contexts/TasksContext";
 
 
@@ -72,16 +71,13 @@ const ToDoForm = ({ opened, setOpened}: ToDoFormProps) => {
         onChange={(value) => setPriority(value as 'High' | 'Medium' | 'Low')}
         clearable
       />
-      <div className="popOver">
-        <Popover position="bottom">
-          <Popover.Target>
-            <Button>Pick Due Date</Button>
-          </Popover.Target>
-          <Popover.Dropdown>
-            <DatePicker value={dueDate} onChange={setDueDate} />
-          </Popover.Dropdown>
-        </Popover>
-      </div>
+      <DateInput
+        mt={"md"}
+        label="Pick Due Date"
+        placeholder="Pick due date"
+        value={dueDate}
+        onChange={setDueDate}
+      />
       <Group mt={"md"}>
         <Button
           onClick={() => {
