@@ -1,6 +1,6 @@
 import { Button, Group } from "@mantine/core";
-import { Task } from "../contexts/TasksContext";
 
+import { Task } from "../../../contexts/TasksContext";
 
 interface TaskItemProps {
   task: Task;
