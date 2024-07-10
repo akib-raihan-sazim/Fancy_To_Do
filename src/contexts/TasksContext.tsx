@@ -1,10 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-<<<<<<< HEAD
 export interface Task {
-=======
-interface Task {
->>>>>>> 0a21041 (feat(FTDA): Added Button for adding tasks.)
   id: number;
   title: string;
   summary: string;
