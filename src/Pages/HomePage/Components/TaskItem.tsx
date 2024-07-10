@@ -1,12 +1,22 @@
+import { useState } from 'react';
 import { Button, Group } from "@mantine/core";
 
-import { Task } from "../../../contexts/TasksContext";
+import { Task, useTasks } from "../../../contexts/TasksContext";
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 interface TaskItemProps {
   task: Task;
 }
 
 const TaskItem = ({ task }: TaskItemProps) => {
+  const { deleteTask } = useTasks();
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleDelete = () => {
+    deleteTask(task.id);
+    setModalOpen(false);
+  };
+
   return (
     <div className="taskItem">
       <h3>{task.title}</h3>
@@ -16,11 +26,16 @@ const TaskItem = ({ task }: TaskItemProps) => {
       </p>
       <p>Priority: {task.priority}</p>
       <Group>
-        <Button variant="subtle">
+        <Button onClick={() => setModalOpen(true)} variant="subtle">
           Delete
         </Button>
         <Button>Edit</Button>
       </Group>
+      <DeleteConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 };
