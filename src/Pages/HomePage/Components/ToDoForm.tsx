@@ -23,20 +23,13 @@ const ToDoForm = ({ opened, setOpened, editingTask}: ToDoFormProps) => {
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [priority, setPriority] = useState<'High' | 'Medium' | 'Low' | null>(null);
 
-  const handleCreateTask = () => {
-    if (title && summary && priority) {     
-      addTask({ title, summary, dueDate, priority });
-      setTitle("");
-      setSummary("");
-      setDueDate(null);
-      setPriority(null);
-      setOpened(false);
-    }
-  };
-
-  const handleEditTask = () => {
-    if (title && summary && priority && editingTask) {
-      editTask({ ...editingTask, title, summary, dueDate, priority });
+  const handleCreateOrEditTask = () => {
+    if (title && summary && priority) {
+      if (editingTask) {
+        editTask({ ...editingTask, title, summary, dueDate, priority });
+      } else {
+        addTask({ title, summary, dueDate, priority });
+      }
       setTitle("");
       setSummary("");
       setDueDate(null);
@@ -105,10 +98,9 @@ const ToDoForm = ({ opened, setOpened, editingTask}: ToDoFormProps) => {
         >
           Cancel
         </Button>
-        {
-          editingTask?
-          <Button onClick={handleEditTask}>Edit Task</Button> : <Button onClick={handleCreateTask}>Create Task</Button>
-        }
+        <Button onClick={handleCreateOrEditTask}>
+          {editingTask ? "Edit Task" : "Create Task"}
+        </Button>
       </Group>
     </Modal>
   );
