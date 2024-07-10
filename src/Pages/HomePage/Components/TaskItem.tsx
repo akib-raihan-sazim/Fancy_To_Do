@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Button, Group } from "@mantine/core";
-import { Task } from "../contexts/TasksContext";
 
 import { Task, useTasks } from "../../../contexts/TasksContext";
 import DeleteConfirmationModal from './DeleteConfirmationModal';
