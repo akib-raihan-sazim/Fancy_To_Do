@@ -90,5 +90,4 @@ const ToDoForm = ({ opened, setOpened}: ToDoFormProps) => {
     </Modal>
   );
 };
-
 export default ToDoForm;
