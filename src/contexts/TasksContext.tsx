@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-interface Task {
+export interface Task {
   id: number;
   title: string;
   summary: string;
@@ -27,8 +27,23 @@ const saveTasksToLocalStorage = (tasks: Task[]) => {
   localStorage.setItem('tasks', JSON.stringify(tasks));
 };
 
+const loadTasksFromLocalStorage = (): Task[] => {
+  const tasks = localStorage.getItem('tasks');
+  if (!tasks) return [];
+  try {
+    const parsedTasks: Task[] = JSON.parse(tasks);
+    return parsedTasks.map(task => ({
+      ...task,
+      dueDate: task.dueDate ? new Date(task.dueDate) : null,
+    }));
+  } catch (error) {
+    console.error('Failed to parse tasks from localStorage:', error);
+    return [];
+  }
+};
+
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(() => loadTasksFromLocalStorage());
 
   useEffect(() => {
     saveTasksToLocalStorage(tasks);
@@ -40,7 +55,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <TasksContext.Provider value={{ tasks, addTask }}>
+    <TasksContext.Provider value={{ tasks, addTask}}>
       {children}
     </TasksContext.Provider>
   );
