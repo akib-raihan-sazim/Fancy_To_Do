@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Group } from "@mantine/core";
 import { Task, useTasks } from "../../../contexts/TasksContext";
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import ToDoForm from './ToDoForm';
 
 interface TaskItemProps {
   task: Task;
@@ -10,6 +11,7 @@ interface TaskItemProps {
 const TaskItem = ({ task }: TaskItemProps) => {
   const { deleteTask } = useTasks();
   const [isModalOpen, setModalOpen] = useState(false);
+  const [editModalOpened, setEditModalOpened] = useState(false);
 
   const handleDelete = () => {
     deleteTask(task.id);
@@ -28,13 +30,20 @@ const TaskItem = ({ task }: TaskItemProps) => {
         <Button onClick={() => setModalOpen(true)} variant="subtle">
           Delete
         </Button>
-        <Button>Edit</Button>
+        <Button onClick={() => setEditModalOpened(true)}>Edit</Button>
       </Group>
       <DeleteConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={handleDelete}
       />
+      {editModalOpened && (
+        <ToDoForm
+          opened={editModalOpened}
+          setOpened={setEditModalOpened}
+          editingTask={task}
+        />
+      )}
     </div>
   );
 };

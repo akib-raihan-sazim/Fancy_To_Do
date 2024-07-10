@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   TextInput,
@@ -8,15 +8,16 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 
-import { useTasks } from "../../../contexts/TasksContext";
+import { Task, useTasks } from "../../../contexts/TasksContext";
 
 interface ToDoFormProps {
   opened: boolean;
   setOpened: (opened: boolean) => void;
+  editingTask?: Task | null;
 }
 
-const ToDoForm = ({ opened, setOpened}: ToDoFormProps) => {
-  const { addTask } = useTasks();
+const ToDoForm = ({ opened, setOpened, editingTask}: ToDoFormProps) => {
+  const { addTask, editTask } = useTasks();
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [dueDate, setDueDate] = useState<Date | null>(null);
@@ -32,6 +33,27 @@ const ToDoForm = ({ opened, setOpened}: ToDoFormProps) => {
       setOpened(false);
     }
   };
+
+  const handleEditTask = () => {
+    if (title && summary && priority && editingTask) {
+      editTask({ ...editingTask, title, summary, dueDate, priority });
+      setTitle("");
+      setSummary("");
+      setDueDate(null);
+      setPriority(null);
+      setOpened(false);
+    }
+  };
+
+  useEffect(() => {
+    if (editingTask) {
+      setTitle(editingTask.title);
+      setSummary(editingTask.summary);
+      setDueDate(editingTask.dueDate);
+      setPriority(editingTask.priority);
+    }
+  }, [editingTask]);
+
   return (
     <Modal
       opened={opened}
@@ -83,9 +105,10 @@ const ToDoForm = ({ opened, setOpened}: ToDoFormProps) => {
         >
           Cancel
         </Button>
-        <Button onClick={handleCreateTask}>
-          Create Task
-        </Button>
+        {
+          editingTask?
+          <Button onClick={handleEditTask}>Edit Task</Button> : <Button onClick={handleCreateTask}>Create Task</Button>
+        }
       </Group>
     </Modal>
   );
