@@ -68,7 +68,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const editTask = (updatedTask: Task) => {
     setTasks(prevTasks => sortTasksByPriority(prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task)));
   };
-  
+
   return (
     <TasksContext.Provider value={{ tasks, addTask, deleteTask, editTask }}>
       {children}
