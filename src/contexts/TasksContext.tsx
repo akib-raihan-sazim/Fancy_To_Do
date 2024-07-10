@@ -1,10 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-<<<<<<< HEAD
 export interface Task {
-=======
-interface Task {
->>>>>>> 0a21041 (feat(FTDA): Added Button for adding tasks.)
   id: number;
   title: string;
   summary: string;
@@ -71,6 +67,10 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   const editTask = (updatedTask: Task) => {
     setTasks(prevTasks => sortTasksByPriority(prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task)));
+  };
+  
+  const deleteTask = (id: number) => {
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
   };
 
   return (
