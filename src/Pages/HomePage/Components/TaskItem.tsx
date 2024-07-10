@@ -7,7 +7,6 @@ interface TaskItemProps {
 }
 
 const TaskItem = ({ task }: TaskItemProps) => {
-  
   return (
     <div className="taskItem">
       <h3>{task.title}</h3>
