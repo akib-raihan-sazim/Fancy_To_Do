@@ -55,7 +55,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     const newTask = { ...task, id: Date.now() };
     setTasks(prevTasks => [...prevTasks, newTask]);
   };
-
+  
   const deleteTask = (id: number) => {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
   };
