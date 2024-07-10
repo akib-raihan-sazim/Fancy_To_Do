@@ -7,14 +7,13 @@ import {
   Select,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useTasks } from "../contexts/TasksContext";
 
+import { useTasks } from "../../../contexts/TasksContext";
 
 interface ToDoFormProps {
   opened: boolean;
   setOpened: (opened: boolean) => void;
 }
-
 
 const ToDoForm = ({ opened, setOpened}: ToDoFormProps) => {
   const { addTask } = useTasks();
@@ -24,10 +23,8 @@ const ToDoForm = ({ opened, setOpened}: ToDoFormProps) => {
   const [priority, setPriority] = useState<'High' | 'Medium' | 'Low' | null>(null);
 
   const handleCreateTask = () => {
-    if (title && summary && priority) {
-      
+    if (title && summary && priority) {     
       addTask({ title, summary, dueDate, priority });
-      
       setTitle("");
       setSummary("");
       setDueDate(null);
@@ -35,7 +32,6 @@ const ToDoForm = ({ opened, setOpened}: ToDoFormProps) => {
       setOpened(false);
     }
   };
-
   return (
     <Modal
       opened={opened}
