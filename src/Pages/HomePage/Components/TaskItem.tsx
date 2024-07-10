@@ -7,7 +7,6 @@ interface TaskItemProps {
 }
 
 const TaskItem = ({ task }: TaskItemProps) => {
-  
   return (
     <div className="taskItem">
       <h3>{task.title}</h3>
@@ -25,5 +24,4 @@ const TaskItem = ({ task }: TaskItemProps) => {
     </div>
   );
 };
-
 export default TaskItem;
