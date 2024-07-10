@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Container } from "@mantine/core";
 
 import ToDoForm from "../Components/ToDoForm";
+import TaskList from "../Components/TaskList";
 
 const HomePageContainer = () => {
   const [opened, setOpened] = useState(false);
@@ -22,6 +23,7 @@ const HomePageContainer = () => {
         Add Task
       </Button>
       <ToDoForm opened={opened} setOpened={setOpened} />
+      <TaskList/>
     </Container>
   );
 };
