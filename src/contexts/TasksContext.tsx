@@ -17,7 +17,7 @@ export interface Task {
 
 interface TasksContextType {
   tasks: Task[];
-  addTask: (task: Omit<Task, "id">) => void;
+  addTask: (task: Omit<Task, "id" | "completed">) => void;
   deleteTask: (id: number) => void;
   editTask: (updatedTask: Task) => void;
   toggleTaskCompletion: (id: number) => void;
