@@ -44,8 +44,13 @@ const loadTasksFromLocalStorage = (): Task[] => {
   }
 };
 
+const sortTasksByPriority = (tasks: Task[]): Task[] => {
+  const priorityOrder: { [key in Task['priority']]: number } = { 'High': 1, 'Medium': 2, 'Low': 3 };
+  return tasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+};
+
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasks, setTasks] = useState<Task[]>(() => loadTasksFromLocalStorage());
+  const [tasks, setTasks] = useState<Task[]>(() => sortTasksByPriority(loadTasksFromLocalStorage()));
 
   useEffect(() => {
     saveTasksToLocalStorage(tasks);
@@ -53,7 +58,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   const addTask = (task: Omit<Task, 'id'>) => {
     const newTask = { ...task, id: Date.now() };
-    setTasks(prevTasks => [...prevTasks, newTask]);
+    setTasks(prevTasks => sortTasksByPriority([...prevTasks, newTask]));
   };
 
   const deleteTask = (id: number) => {
@@ -61,7 +66,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const editTask = (updatedTask: Task) => {
-    setTasks(prevTasks => prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task));
+    setTasks(prevTasks => sortTasksByPriority(prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task)));
   };
 
   return (
