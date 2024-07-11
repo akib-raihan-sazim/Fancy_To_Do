@@ -21,12 +21,16 @@ const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
       dueDate: null as Date | null,
       priority: null as "High" | "Medium" | "Low" | null,
     },
+
     validate: {
       title: (value) =>
         value.length < 2 ? "Title must have at least 2 letters" : null,
+      
       summary: (value) =>
         value.length < 5 ? "Summary must have at least 5 letters" : null,
+
       priority: (value) => (value ? null : "Priority is required"),
+
       dueDate: (value) => {
         if (!value) {
           return "Due date is required";
