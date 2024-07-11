@@ -40,6 +40,7 @@ const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
       },
     },
   });
+  
   const handleCreateOrEditTask = (values: typeof form.values) => {
     const { title, summary, dueDate, priority } = values;
     if (!priority) {
