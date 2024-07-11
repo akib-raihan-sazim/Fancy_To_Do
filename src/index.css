@@ -1,11 +1,8 @@
 .title{
     text-align: center;
 }
-.popOver{
-    padding-top: 1em;
-}
 .taskContent.completed {
     text-decoration: line-through;
     color: grey;
-  }
+}
   

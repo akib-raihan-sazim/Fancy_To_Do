@@ -1,12 +1,7 @@
-import { useEffect, useState } from "react";
-import {
-  Modal,
-  TextInput,
-  Button,
-  Group,
-  Select,
-} from "@mantine/core";
-import {DateInput} from "@mantine/dates"
+import { useEffect } from "react";
+import { Modal, TextInput, Button, Group, Select } from "@mantine/core";
+import { DateInput } from "@mantine/dates";
+import { useForm } from "@mantine/form";
 
 import { Task, useTasks } from "../../../contexts/TasksContext";
 
@@ -16,92 +11,120 @@ interface ToDoFormProps {
   editingTask?: Task | null;
 }
 
-const ToDoForm = ({ opened, setOpened, editingTask}: ToDoFormProps) => {
+const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
   const { addTask, editTask } = useTasks();
-  const [title, setTitle] = useState("");
-  const [summary, setSummary] = useState("");
-  const [dueDate, setDueDate] = useState<Date | null>(null);
-  const [priority, setPriority] = useState<'High' | 'Medium' | 'Low' | null>(null);
 
-  const handleCreateOrEditTask = () => {
-    if (title && summary && priority) {
-      if (editingTask) {
-        editTask({ ...editingTask, title, summary, dueDate, priority });
-      } else {
-        addTask({ title, summary, dueDate, priority });
-      }
-      setTitle("");
-      setSummary("");
-      setDueDate(null);
-      setPriority(null);
-      setOpened(false);
+  const form = useForm({
+    initialValues: {
+      title: "",
+      summary: "",
+      dueDate: null as Date | null,
+      priority: null as "High" | "Medium" | "Low" | null,
+    },
+    validate: {
+      title: (value) =>
+        value.length < 2 ? "Title must have at least 2 letters" : null,
+      summary: (value) =>
+        value.length < 5 ? "Summary must have at least 5 letters" : null,
+      priority: (value) => (value ? null : "Priority is required"),
+      dueDate: (value) => {
+        if (!value) {
+          return "Due date is required";
+        }
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (value < today) {
+          return "Due date cannot be in the past";
+        }
+        return null;
+      },
+    },
+  });
+  const handleCreateOrEditTask = (values: typeof form.values) => {
+    const { title, summary, dueDate, priority } = values;
+    if (!priority) {
+      form.setFieldError("priority", "Priority is required");
+      return;
     }
+    if (editingTask) {
+      editTask({ ...editingTask, title, summary, dueDate, priority });
+    } else {
+      addTask({ title, summary, dueDate, priority });
+    }
+    setOpened(false);
+    form.reset();
   };
 
   useEffect(() => {
     if (editingTask) {
-      setTitle(editingTask.title);
-      setSummary(editingTask.summary);
-      setDueDate(editingTask.dueDate);
-      setPriority(editingTask.priority);
+      form.setValues({
+        title: editingTask.title,
+        summary: editingTask.summary,
+        dueDate: editingTask.dueDate,
+        priority: editingTask.priority,
+      });
+    } else {
+      form.reset();
     }
   }, [editingTask]);
+
+  const priorityOptions = [
+    { value: "High", label: "High" },
+    { value: "Medium", label: "Medium" },
+    { value: "Low", label: "Low" },
+  ];
 
   return (
     <Modal
       opened={opened}
-      withCloseButton={false}
       onClose={() => setOpened(false)}
+      title={editingTask ? "Edit Task" : "Create Task"}
+      size="lg"
+      style={{ maxWidth: 600 }}
     >
-      <TextInput
-        mt={"md"}
-        placeholder={"Task Title"}
-        required
-        label={"Title"}
-        value={title}
-        onChange={(event) => setTitle(event.currentTarget.value)}
-      />
-      <TextInput
-        mt={"md"}
-        placeholder={"Task Summary"}
-        required
-        label={"Summary"}
-        value={summary}
-        onChange={(event) => setSummary(event.currentTarget.value)}
-      />
-      <Select
-        mt={"md"}
-        placeholder={"Select priority"}
-        label={"Priority"}
-        data={[
-          { value: "High", label: "High" },
-          { value: "Medium", label: "Medium" },
-          { value: "Low", label: "Low" },
-        ]}
-        value={priority}
-        onChange={(value) => setPriority(value as 'High' | 'Medium' | 'Low')}
-        clearable
-      />
-      <DateInput
-        mt={"md"}
-        label="Pick Due Date"
-        placeholder="Pick due date"
-        value={dueDate}
-        onChange={setDueDate}
-      />
-      <Group mt={"md"}>
-        <Button
-          onClick={() => {
-            setOpened(false);
-          }}
-          variant={"subtle"}
-        >
-          Cancel
-        </Button>
-        <Button onClick={handleCreateOrEditTask}>
-          {editingTask ? "Edit Task" : "Create Task"}
-        </Button>
-      </Group>
+      <form onSubmit={form.onSubmit(handleCreateOrEditTask)}>
+        <TextInput
+          mt="md"
+          label="Title"
+          placeholder="Task Title"
+          {...form.getInputProps("title")}
+        />
+        <TextInput
+          mt="md"
+          label="Summary"
+          placeholder="Task Summary"
+          {...form.getInputProps("summary")}
+        />
+        <Select
+          mt="md"
+          label="Priority"
+          placeholder="Select priority"
+          data={priorityOptions}
+          {...form.getInputProps("priority")}
+          clearable
+        />
+        <DateInput
+          mt="md"
+          label="Due Date"
+          placeholder="Pick due date"
+          value={form.values.dueDate}
+          {...form.getInputProps("dueDate")}
+        />
+        <Group mt="md">
+          <Button
+            onClick={() => {
+              setOpened(false)
+              form.reset()
+            }}
+            variant="light"
+          >
+            Cancel
+          </Button>
+          <Button type="submit" variant="gradient">
+            {editingTask ? "Edit Task" : "Create Task"}
+          </Button>
+        </Group>
+      </form>
     </Modal>
   );
 };
