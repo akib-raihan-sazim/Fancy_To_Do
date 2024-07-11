@@ -6,7 +6,7 @@ import {
   Group,
   Select,
 } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
+import {DateInput} from "@mantine/dates"
 
 import { Task, useTasks } from "../../../contexts/TasksContext";
 
