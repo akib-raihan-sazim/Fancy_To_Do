@@ -104,14 +104,6 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const deleteTask = (id: number) => {
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
-  };
-
-  const editTask = (updatedTask: Task) => {
-    setTasks(prevTasks => prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task));
-  };
-
   return (
     <TasksContext.Provider
       value={{ tasks, addTask, deleteTask, editTask, toggleTaskCompletion }}
