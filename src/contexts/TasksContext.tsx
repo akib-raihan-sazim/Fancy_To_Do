@@ -72,8 +72,11 @@ const sortTasks = (tasks: Task[]): Task[] => {
 const filterTasks = (tasks: Task[], filterStatus: string, filterPriority: string, filterDueDate: Date | null): Task[] => {
   return tasks.filter(task => {
     const statusMatch = filterStatus === 'all' || (filterStatus === 'active' ? !task.completed : task.completed);
+
     const priorityMatch = filterPriority === 'all' || task.priority === filterPriority;
+
     const dueDateMatch = filterDueDate === null || (task.dueDate && task.dueDate.toDateString() === filterDueDate.toDateString());
+    
     return statusMatch && priorityMatch && dueDateMatch;
   });
 };
