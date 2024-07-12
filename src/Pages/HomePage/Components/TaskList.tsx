@@ -1,4 +1,4 @@
-import { Select, Group, Button } from "@mantine/core";
+import { Select, Group, Button, Container} from "@mantine/core";
 import { useState } from "react";
 import { DateInput } from "@mantine/dates";
 
@@ -6,7 +6,7 @@ import { useTasks } from "../../../contexts/TasksContext";
 import TaskItem from "./TaskItem";
 
 const TaskList = () => {
-  const { tasks, setFilterStatus, setFilterPriority, setFilterDueDate } = useTasks();
+  const { tasks, setFilterStatus, setFilterPriority, setFilterDueDate, clearCompletedTasks } = useTasks();
   const [filterStatus, setFilterStatusState] = useState<"all" | "active" | "completed">("all");
   const [filterPriority, setFilterPriorityState] = useState<"High" | "Medium" | "Low" | "all">("all");
   const [filterDueDate, setFilterDueDateState] = useState<Date | null>(null);
@@ -28,6 +28,11 @@ const TaskList = () => {
 
   return (
     <div className="taskList">
+      <Container className="clear-task-container">
+        <Button color="red" onClick={clearCompletedTasks}>
+          Clear Completed Tasks
+        </Button>
+      </Container>
       <div className="taskFilter">
         <Group mb="md">
           <Select
