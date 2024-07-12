@@ -17,4 +17,17 @@
     justify-content: center;
     padding-top: 2em;
 }
-  
+
+.undo-btn{
+    width: 30%;
+    margin-top: 2em;
+}
+
+.left-icon{
+    padding-right: 2px;
+}
+
+.undo-redo-space{
+    display: flex;
+    justify-content: center;
+}

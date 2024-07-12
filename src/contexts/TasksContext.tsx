@@ -21,10 +21,11 @@ interface TasksContextType {
   deleteTask: (id: number) => void;
   editTask: (updatedTask: Task) => void;
   toggleTaskCompletion: (id: number) => void;
-  setFilterStatus: (status: 'all' | 'active' | 'completed') => void;
-  setFilterPriority: (priority: 'High' | 'Medium' | 'Low' | 'all') => void;
+  setFilterStatus: (status: "all" | "active" | "completed") => void;
+  setFilterPriority: (priority: "High" | "Medium" | "Low" | "all") => void;
   setFilterDueDate: (dueDate: Date | null) => void;
   clearCompletedTasks: () => void;
+  undoLastAction: () => void;
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -70,14 +71,25 @@ const sortTasks = (tasks: Task[]): Task[] => {
   });
 };
 
-const filterTasks = (tasks: Task[], filterStatus: string, filterPriority: string, filterDueDate: Date | null): Task[] => {
-  return tasks.filter(task => {
-    const statusMatch = filterStatus === 'all' || (filterStatus === 'active' ? !task.completed : task.completed);
+const filterTasks = (
+  tasks: Task[],
+  filterStatus: string,
+  filterPriority: string,
+  filterDueDate: Date | null
+): Task[] => {
+  return tasks.filter((task) => {
+    const statusMatch =
+      filterStatus === "all" ||
+      (filterStatus === "active" ? !task.completed : task.completed);
 
-    const priorityMatch = filterPriority === 'all' || task.priority === filterPriority;
+    const priorityMatch =
+      filterPriority === "all" || task.priority === filterPriority;
 
-    const dueDateMatch = filterDueDate === null || (task.dueDate && task.dueDate.toDateString() === filterDueDate.toDateString());
-    
+    const dueDateMatch =
+      filterDueDate === null ||
+      (task.dueDate &&
+        task.dueDate.toDateString() === filterDueDate.toDateString());
+
     return statusMatch && priorityMatch && dueDateMatch;
   });
 };
@@ -86,9 +98,22 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<Task[]>(() =>
     sortTasks(loadTasksFromLocalStorage())
   );
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed'>('all');
-  const [filterPriority, setFilterPriority] = useState<'High' | 'Medium' | 'Low' | 'all'>('all');
+
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "active" | "completed"
+  >("all");
+
+  const [filterPriority, setFilterPriority] = useState<
+    "High" | "Medium" | "Low" | "all"
+  >("all");
+
   const [filterDueDate, setFilterDueDate] = useState<Date | null>(null);
+
+  const [history, setHistory] = useState<Task[][]>([]);
+
+  const saveHistoryState = () => {
+    setHistory((prevHistory) => [...prevHistory, tasks]);
+  };
 
   useEffect(() => {
     saveTasksToLocalStorage(tasks);
@@ -97,10 +122,12 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const addTask = (task: Omit<Task, "id" | "completed">) => {
     const newTask = { ...task, id: Date.now(), completed: false };
     setTasks((prevTasks) => sortTasks([...prevTasks, newTask]));
+    saveHistoryState();
   };
 
   const deleteTask = (id: number) => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    saveHistoryState();
   };
 
   const editTask = (updatedTask: Task) => {
@@ -111,6 +138,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
         )
       )
     );
+    saveHistoryState();
   };
 
   const toggleTaskCompletion = (id: number) => {
@@ -121,17 +149,43 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
         )
       )
     );
+    saveHistoryState();
   };
 
-  const filteredTasks = filterTasks(tasks, filterStatus, filterPriority, filterDueDate);
+  const filteredTasks = filterTasks(
+    tasks,
+    filterStatus,
+    filterPriority,
+    filterDueDate
+  );
 
   const clearCompletedTasks = () => {
-    setTasks(prevTasks => prevTasks.filter(task => !task.completed));
+    setTasks((prevTasks) => prevTasks.filter((task) => !task.completed));
+    saveHistoryState();
+  };
+
+  const undoLastAction = () => {
+    if (history.length > 0) {
+      const previousState = history[history.length - 1];
+      setTasks(previousState);
+      setHistory(history.slice(0, -1));
+    }
   };
 
   return (
     <TasksContext.Provider
-      value={{ tasks: filteredTasks, addTask, deleteTask, editTask, toggleTaskCompletion, setFilterStatus, setFilterPriority, setFilterDueDate, clearCompletedTasks }}
+      value={{
+        tasks: filteredTasks,
+        addTask,
+        deleteTask,
+        editTask,
+        toggleTaskCompletion,
+        setFilterStatus,
+        setFilterPriority,
+        setFilterDueDate,
+        clearCompletedTasks,
+        undoLastAction,
+      }}
     >
       {children}
     </TasksContext.Provider>
