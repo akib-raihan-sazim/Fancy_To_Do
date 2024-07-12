@@ -21,6 +21,9 @@ interface TasksContextType {
   deleteTask: (id: number) => void;
   editTask: (updatedTask: Task) => void;
   toggleTaskCompletion: (id: number) => void;
+  setFilterStatus: (status: 'all' | 'active' | 'completed') => void;
+  setFilterPriority: (priority: 'High' | 'Medium' | 'Low' | 'all') => void;
+  setFilterDueDate: (dueDate: Date | null) => void;
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -66,10 +69,25 @@ const sortTasks = (tasks: Task[]): Task[] => {
   });
 };
 
+const filterTasks = (tasks: Task[], filterStatus: string, filterPriority: string, filterDueDate: Date | null): Task[] => {
+  return tasks.filter(task => {
+    const statusMatch = filterStatus === 'all' || (filterStatus === 'active' ? !task.completed : task.completed);
+
+    const priorityMatch = filterPriority === 'all' || task.priority === filterPriority;
+
+    const dueDateMatch = filterDueDate === null || (task.dueDate && task.dueDate.toDateString() === filterDueDate.toDateString());
+    
+    return statusMatch && priorityMatch && dueDateMatch;
+  });
+};
+
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<Task[]>(() =>
     sortTasks(loadTasksFromLocalStorage())
   );
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed'>('all');
+  const [filterPriority, setFilterPriority] = useState<'High' | 'Medium' | 'Low' | 'all'>('all');
+  const [filterDueDate, setFilterDueDate] = useState<Date | null>(null);
 
   useEffect(() => {
     saveTasksToLocalStorage(tasks);
@@ -104,9 +122,11 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  const filteredTasks = filterTasks(tasks, filterStatus, filterPriority, filterDueDate);
+
   return (
     <TasksContext.Provider
-      value={{ tasks, addTask, deleteTask, editTask, toggleTaskCompletion }}
+      value={{ tasks: filteredTasks, addTask, deleteTask, editTask, toggleTaskCompletion, setFilterStatus, setFilterPriority, setFilterDueDate }}
     >
       {children}
     </TasksContext.Provider>

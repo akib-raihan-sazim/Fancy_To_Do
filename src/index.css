@@ -4,5 +4,10 @@
 .taskContent.completed {
     text-decoration: line-through;
     color: grey;
+    padding: 2em 0;
 }
-  
+.taskFilter{
+    display: flex;
+    justify-content: center;
+    padding-top: 2em;
+}
