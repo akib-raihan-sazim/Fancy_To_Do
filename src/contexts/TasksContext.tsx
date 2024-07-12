@@ -24,6 +24,7 @@ interface TasksContextType {
   setFilterStatus: (status: 'all' | 'active' | 'completed') => void;
   setFilterPriority: (priority: 'High' | 'Medium' | 'Low' | 'all') => void;
   setFilterDueDate: (dueDate: Date | null) => void;
+  clearCompletedTasks: () => void;
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -124,9 +125,13 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   const filteredTasks = filterTasks(tasks, filterStatus, filterPriority, filterDueDate);
 
+  const clearCompletedTasks = () => {
+    setTasks(prevTasks => prevTasks.filter(task => !task.completed));
+  };
+
   return (
     <TasksContext.Provider
-      value={{ tasks: filteredTasks, addTask, deleteTask, editTask, toggleTaskCompletion, setFilterStatus, setFilterPriority, setFilterDueDate }}
+      value={{ tasks: filteredTasks, addTask, deleteTask, editTask, toggleTaskCompletion, setFilterStatus, setFilterPriority, setFilterDueDate, clearCompletedTasks }}
     >
       {children}
     </TasksContext.Provider>
