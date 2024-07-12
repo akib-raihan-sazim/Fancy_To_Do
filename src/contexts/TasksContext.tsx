@@ -26,6 +26,7 @@ interface TasksContextType {
   setFilterDueDate: (dueDate: Date | null) => void;
   clearCompletedTasks: () => void;
   undoLastAction: () => void;
+  redoLastAction: () => void;
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -111,6 +112,8 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   const [history, setHistory] = useState<Task[][]>([]);
 
+  const [redoStack, setRedoStack] = useState<Task[][]>([])
+
   const saveHistoryState = () => {
     setHistory((prevHistory) => [...prevHistory, tasks]);
   };
@@ -169,6 +172,16 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
       const previousState = history[history.length - 1];
       setTasks(previousState);
       setHistory(history.slice(0, -1));
+      setRedoStack((prevRedoStack) => [...prevRedoStack, tasks]);
+    }
+  };
+
+  const redoLastAction = () => {
+    if (redoStack.length > 0) {
+      const nextState = redoStack[redoStack.length - 1];
+      setHistory((prevHistory) => [...prevHistory, tasks]);
+      setTasks(nextState);
+      setRedoStack(redoStack.slice(0, -1));
     }
   };
 
@@ -185,6 +198,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
         setFilterDueDate,
         clearCompletedTasks,
         undoLastAction,
+        redoLastAction
       }}
     >
       {children}
