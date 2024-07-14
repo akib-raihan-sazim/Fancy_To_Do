@@ -16,7 +16,7 @@ const HomePageContainer = () => {
 
   return (
     <Container>
-      <h1 className="title">Fancy To-DO With TypeScript</h1>
+      <h1 className="title">Fancy To-Do With TypeScript</h1>
       <Button
         fullWidth
         variant="gradient"
