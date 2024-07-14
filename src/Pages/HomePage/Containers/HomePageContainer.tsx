@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Container, Group } from "@mantine/core";
-import { FaArrowAltCircleLeft } from "react-icons/fa";
+import { FaArrowAltCircleLeft, FaArrowAltCircleRight } from "react-icons/fa";
 
 import ToDoForm from "../Components/ToDoForm";
 import TaskList from "../Components/TaskList";
@@ -8,7 +8,7 @@ import { useTasks } from "../../../contexts/TasksContext";
 
 const HomePageContainer = () => {
   const [opened, setOpened] = useState(false);
-  const { undoLastAction } = useTasks();
+  const { undoLastAction, redoLastAction } = useTasks();
 
   const handleToDoForm = () => {
     setOpened(true);
@@ -34,6 +34,15 @@ const HomePageContainer = () => {
         >
           <FaArrowAltCircleLeft className="left-icon" />
           UNDO
+        </Button>
+        <Button
+          className="undo-btn"
+          variant="gradient"
+          gradient={{ from: "red", to: "orange", deg: 90 }}
+          onClick={redoLastAction}
+        >
+          REDO
+          <FaArrowAltCircleRight className="left-icon" />
         </Button>
       </Group>
       <ToDoForm opened={opened} setOpened={setOpened} />

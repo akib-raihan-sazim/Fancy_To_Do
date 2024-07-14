@@ -4,7 +4,6 @@
 .taskContent.completed {
     text-decoration: line-through;
     color: grey;
-    padding: 2em 0;
 }
 .taskFilter{
     display: flex;
@@ -24,7 +23,8 @@
 }
 
 .left-icon{
-    padding-right: 2px;
+    padding:0 2px;
+    width: 2em;
 }
 
 .undo-redo-space{
