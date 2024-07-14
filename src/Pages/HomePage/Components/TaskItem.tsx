@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { Button, Group } from "@mantine/core";
+import { useState } from 'react';
+import { Card, Button, Group, Text, Badge, ActionIcon } from "@mantine/core";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 import { Task, useTasks } from "../../../contexts/TasksContext";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
-import ToDoForm from "./ToDoForm";
+import DeleteConfirmationModal from './DeleteConfirmationModal';
+import ToDoForm from './ToDoForm';
 
 interface TaskItemProps {
   task: Task;
@@ -19,28 +20,58 @@ const TaskItem = ({ task }: TaskItemProps) => {
     setModalOpen(false);
   };
 
+  const getPriorityColor = (priority: Task["priority"]) => {
+    switch (priority) {
+      case "High":
+        return "blue";
+      case "Medium":
+        return "green";
+      case "Low":
+        return "red";
+    }
+  };
+
   return (
-    <div className="taskItem">
-      <div className={`taskContent ${task.completed ? "completed" : ""}`}>
-        <h3>{task.title}</h3>
-        <p>{task.summary}</p>
-        <p>
-          Due Date: {task.dueDate ? task.dueDate.toDateString() : "No due date"}
-        </p>
-        <p>Priority: {task.priority}</p>
-      </div>
-      <Group>
-        <Button onClick={() => setModalOpen(true)} variant="subtle">
-          Delete
-        </Button>
+    <Card shadow="sm" m="lg" radius="md" withBorder style={{ borderColor: getPriorityColor(task.priority), position: "relative" }}>
+      <ActionIcon
+        variant="subtle"
+        color="red"
+        style={{ position: 'absolute', top: 10, right: 10 }}
+        onClick={() => setModalOpen(true)}
+      >
+        <FaRegTrashAlt size={18}/>
+      </ActionIcon>
+      <Group mb="xs">
+        <Text style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+          {task.title}
+        </Text>
+        <Badge color={getPriorityColor(task.priority)} variant="light">
+          {task.priority}
+        </Badge>
+      </Group>
+
+      <Text size="sm" style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+        {task.summary}
+      </Text>
+      <Text size="xs" style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+        Due Date: {task.dueDate ? task.dueDate.toDateString() : "No due date"}
+      </Text>
+
+      <Group mt="md">
+        {!task.completed && (
+          <Button variant="outline" onClick={() => setEditModalOpened(true)}>
+            Edit
+          </Button>
+        )}
         <Button
-          onClick={() => toggleTaskCompletion(task.id)}
           variant={task.completed ? "light" : "outline"}
+          color={task.completed ? "green" : "blue"}
+          onClick={() => toggleTaskCompletion(task.id)}
         >
           {task.completed ? "Completed" : "Complete"}
         </Button>
-        <Button onClick={() => setEditModalOpened(true)}>Edit</Button>
       </Group>
+
       <DeleteConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
@@ -53,7 +84,8 @@ const TaskItem = ({ task }: TaskItemProps) => {
           editingTask={task}
         />
       )}
-    </div>
+    </Card>
   );
 };
+
 export default TaskItem;

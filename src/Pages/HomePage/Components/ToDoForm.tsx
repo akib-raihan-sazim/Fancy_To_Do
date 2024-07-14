@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Modal, TextInput, Button, Group, Select } from "@mantine/core";
+import { Modal, TextInput, Button, Group, Select, Textarea } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 
@@ -94,7 +94,7 @@ const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
           placeholder="Task Title"
           {...form.getInputProps("title")}
         />
-        <TextInput
+        <Textarea
           mt="md"
           label="Summary"
           placeholder="Task Summary"
