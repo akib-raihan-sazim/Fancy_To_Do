@@ -89,7 +89,7 @@ const filterTasks = (
     const dueDateMatch =
       filterDueDate === null ||
       (task.dueDate &&
-        task.dueDate.toDateString() === filterDueDate.toDateString());
+        task.dueDate <= filterDueDate);
 
     return statusMatch && priorityMatch && dueDateMatch;
   });

@@ -23,11 +23,15 @@ const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
     },
 
     validate: {
-      title: (value) =>
-        value.length < 2 ? "Title must have at least 2 letters" : null,
-      
-      summary: (value) =>
-        value.length < 5 ? "Summary must have at least 5 letters" : null,
+      title: (value) => {
+        const trimmedValue = value.trim();
+        return trimmedValue.length < 2 ? "Title must have at least 2 letters" : null;
+      },
+
+      summary: (value) => {
+        const trimmedValue = value.trim();
+        return trimmedValue.length < 5 ? "Summary must have at least 5 letters" : null;
+      },
 
       priority: (value) => (value ? null : "Priority is required"),
 
@@ -44,7 +48,7 @@ const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
       },
     },
   });
-  
+
   const handleCreateOrEditTask = (values: typeof form.values) => {
     const { title, summary, dueDate, priority } = values;
     if (!priority) {
@@ -118,8 +122,8 @@ const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
         <Group mt="md">
           <Button
             onClick={() => {
-              setOpened(false)
-              form.reset()
+              setOpened(false);
+              form.reset();
             }}
             variant="light"
           >
