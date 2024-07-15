@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card, Button, Group, Text, Badge, ActionIcon } from "@mantine/core";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { FiEdit } from 'react-icons/fi';
 
 import { Task, useTasks } from "../../../contexts/TasksContext";
 import DeleteConfirmationModal from './DeleteConfirmationModal';
@@ -60,7 +61,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
       <Group mt="md">
         {!task.completed && (
           <Button variant="outline" onClick={() => setEditModalOpened(true)}>
-            Edit
+            Edit <FiEdit className='left-icon'/>
           </Button>
         )}
         <Button
