@@ -1,14 +1,27 @@
-import { Select, Group, Button, Container} from "@mantine/core";
+import { Select, Group, Button, Container } from "@mantine/core";
 import { useState } from "react";
 import { DateInput } from "@mantine/dates";
 
-import { useTasks } from "../../../contexts/TasksContext";
-import TaskItem from "./TaskItem";
+import { useTasks } from "../TaskContext/TaskContext";
+import TaskItem from "../TaskItem/TaskItem";
 
 const TaskList = () => {
-  const { tasks, setFilterStatus, setFilterPriority, setFilterDueDate, clearCompletedTasks } = useTasks();
-  const [filterStatus, setFilterStatusState] = useState<"all" | "active" | "completed">("all");
-  const [filterPriority, setFilterPriorityState] = useState<"High" | "Medium" | "Low" | "all">("all");
+  const {
+    tasks,
+    setFilterStatus,
+    setFilterPriority,
+    setFilterDueDate,
+    clearCompletedTasks,
+  } = useTasks();
+
+  const [filterStatus, setFilterStatusState] = useState<
+    "all" | "active" | "completed"
+  >("all");
+
+  const [filterPriority, setFilterPriorityState] = useState<
+    "High" | "Medium" | "Low" | "all"
+  >("all");
+
   const [filterDueDate, setFilterDueDateState] = useState<Date | null>(null);
 
   const handleFilterStatusChange = (value: "all" | "active" | "completed") => {
@@ -16,7 +29,9 @@ const TaskList = () => {
     setFilterStatusState(value);
   };
 
-  const handleFilterPriorityChange = (value: "High" | "Medium" | "Low" | "all") => {
+  const handleFilterPriorityChange = (
+    value: "High" | "Medium" | "Low" | "all"
+  ) => {
     setFilterPriority(value);
     setFilterPriorityState(value);
   };
@@ -28,7 +43,7 @@ const TaskList = () => {
 
   return (
     <div className="taskList">
-      <Container className="clear-task-container">
+      <Container className="clear-task-btn-container">
         <Button color="red" onClick={clearCompletedTasks}>
           Clear Completed Tasks
         </Button>

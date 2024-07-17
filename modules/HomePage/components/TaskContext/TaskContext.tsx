@@ -6,6 +6,8 @@ import {
   useEffect,
 } from "react";
 
+import { TasksContextType } from "./TaskContext.types";
+
 export interface Task {
   id: number;
   title: string;
@@ -13,20 +15,6 @@ export interface Task {
   dueDate: Date | null;
   priority: "High" | "Medium" | "Low";
   completed: boolean;
-}
-
-interface TasksContextType {
-  tasks: Task[];
-  addTask: (task: Omit<Task, "id" | "completed">) => void;
-  deleteTask: (id: number) => void;
-  editTask: (updatedTask: Task) => void;
-  toggleTaskCompletion: (id: number) => void;
-  setFilterStatus: (status: "all" | "active" | "completed") => void;
-  setFilterPriority: (priority: "High" | "Medium" | "Low" | "all") => void;
-  setFilterDueDate: (dueDate: Date | null) => void;
-  clearCompletedTasks: () => void;
-  undoLastAction: () => void;
-  redoLastAction: () => void;
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -40,22 +28,27 @@ export const useTasks = () => {
 };
 
 const saveTasksToLocalStorage = (tasks: Task[]) => {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
+  if (typeof window !== "undefined") {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }
 };
 
 const loadTasksFromLocalStorage = (): Task[] => {
-  const tasks = localStorage.getItem("tasks");
-  if (!tasks) return [];
-  try {
-    const parsedTasks: Task[] = JSON.parse(tasks);
-    return parsedTasks.map((task) => ({
-      ...task,
-      dueDate: task.dueDate ? new Date(task.dueDate) : null,
-    }));
-  } catch (error) {
-    console.error("Failed to parse tasks from localStorage:", error);
-    return [];
+  if (typeof window !== "undefined") {
+    const tasks = localStorage.getItem("tasks");
+    if (!tasks) return [];
+    try {
+      const parsedTasks: Task[] = JSON.parse(tasks);
+      return parsedTasks.map((task) => ({
+        ...task,
+        dueDate: task.dueDate ? new Date(task.dueDate) : null,
+      }));
+    } catch (error) {
+      console.error("Failed to parse tasks from localStorage:", error);
+      return [];
+    }
   }
+  return [];
 };
 
 const sortTasks = (tasks: Task[]): Task[] => {
@@ -87,18 +80,14 @@ const filterTasks = (
       filterPriority === "all" || task.priority === filterPriority;
 
     const dueDateMatch =
-      filterDueDate === null ||
-      (task.dueDate &&
-        task.dueDate <= filterDueDate);
+      filterDueDate === null || (task.dueDate && task.dueDate <= filterDueDate);
 
     return statusMatch && priorityMatch && dueDateMatch;
   });
 };
 
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasks, setTasks] = useState<Task[]>(() =>
-    sortTasks(loadTasksFromLocalStorage())
-  );
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const [filterStatus, setFilterStatus] = useState<
     "all" | "active" | "completed"
@@ -112,15 +101,22 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   const [history, setHistory] = useState<Task[][]>([]);
 
-  const [redoStack, setRedoStack] = useState<Task[][]>([])
+  const [redoStack, setRedoStack] = useState<Task[][]>([]);
+
+  useEffect(() => {
+    if (tasks.length > 0) {
+      saveTasksToLocalStorage(tasks);
+    }
+  }, [tasks]);
+
+  useEffect(() => {
+    const loadedTasks = loadTasksFromLocalStorage();
+    setTasks(sortTasks(loadedTasks));
+  }, []);
 
   const saveHistoryState = () => {
     setHistory((prevHistory) => [...prevHistory, tasks]);
   };
-
-  useEffect(() => {
-    saveTasksToLocalStorage(tasks);
-  }, [tasks]);
 
   const addTask = (task: Omit<Task, "id" | "completed">) => {
     const newTask = { ...task, id: Date.now(), completed: false };
@@ -198,7 +194,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
         setFilterDueDate,
         clearCompletedTasks,
         undoLastAction,
-        redoLastAction
+        redoLastAction,
       }}
     >
       {children}

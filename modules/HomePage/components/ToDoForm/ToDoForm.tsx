@@ -1,15 +1,18 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from "react";
-import { Modal, TextInput, Button, Group, Select, Textarea } from "@mantine/core";
+import {
+  Modal,
+  TextInput,
+  Button,
+  Group,
+  Select,
+  Textarea,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 
-import { Task, useTasks } from "../../../contexts/TasksContext";
-
-interface ToDoFormProps {
-  opened: boolean;
-  setOpened: (opened: boolean) => void;
-  editingTask?: Task | null;
-}
+import { Task, useTasks } from "../TaskContext/TaskContext";
+import { ToDoFormProps } from "./ToDoForm.types";
 
 const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
   const { addTask, editTask } = useTasks();
@@ -25,12 +28,16 @@ const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
     validate: {
       title: (value) => {
         const trimmedValue = value.trim();
-        return trimmedValue.length < 2 ? "Title must have at least 2 letters" : null;
+        return trimmedValue.length < 2
+          ? "Title must have at least 2 letters"
+          : null;
       },
 
       summary: (value) => {
         const trimmedValue = value.trim();
-        return trimmedValue.length < 5 ? "Summary must have at least 5 letters" : null;
+        return trimmedValue.length < 5
+          ? "Summary must have at least 5 letters"
+          : null;
       },
 
       priority: (value) => (value ? null : "Priority is required"),
