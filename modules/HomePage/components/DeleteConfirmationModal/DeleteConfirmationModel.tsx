@@ -1,12 +1,12 @@
 import { Button, Modal, Text, Group } from "@mantine/core";
 
-import { DeleteConfirmationModalProps } from "./DeleteConfirmationModal.types";
+import { IDeleteConfirmationModalProps } from "./DeleteConfirmationModal.types";
 
 const DeleteConfirmationModal = ({
   isOpen,
   onClose,
   onConfirm,
-}: DeleteConfirmationModalProps) => {
+}: IDeleteConfirmationModalProps) => {
   return (
     <Modal opened={isOpen} onClose={onClose} title="Confirm Deletion">
       <Text>Are you sure you want to delete this task?</Text>

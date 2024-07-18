@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from "react";
 import {
   Modal,
@@ -11,10 +10,11 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 
-import { Task, useTasks } from "../TaskContext/TaskContext";
-import { ToDoFormProps } from "./ToDoForm.types";
+import { useTasks } from "../TaskContext/TaskContext";
+import { IToDoFormProps } from "./ToDoForm.types";
+import { EPriority } from "../TaskContext/TaskContext.types";
 
-const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
+const ToDoForm = ({ opened, setOpened, editingTask }: IToDoFormProps) => {
   const { addTask, editTask } = useTasks();
 
   const form = useForm({
@@ -22,7 +22,7 @@ const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
       title: "",
       summary: "",
       dueDate: null as Date | null,
-      priority: null as "High" | "Medium" | "Low" | null,
+      priority: null as EPriority | null,
     },
 
     validate: {

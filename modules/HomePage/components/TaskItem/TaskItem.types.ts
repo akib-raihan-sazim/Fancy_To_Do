@@ -1,5 +1,5 @@
-import { Task } from "../TaskContext/TaskContext";
+import { ITask } from "../TaskContext/TaskContext.types";
 
-export interface TaskItemProps {
-    task: Task;
+export interface ITaskItemProps {
+    task: ITask;
 }

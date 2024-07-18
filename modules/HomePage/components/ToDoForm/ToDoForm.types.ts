@@ -1,7 +1,7 @@
-import { Task } from "../TaskContext/TaskContext";
+import { ITask } from "../TaskContext/TaskContext.types";
 
-export interface ToDoFormProps {
+export interface IToDoFormProps {
     opened: boolean;
     setOpened: (opened: boolean) => void;
-    editingTask?: Task | null;
+    editingTask?: ITask | null;
 }

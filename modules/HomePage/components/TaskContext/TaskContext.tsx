@@ -6,18 +6,9 @@ import {
   useEffect,
 } from "react";
 
-import { TasksContextType } from "./TaskContext.types";
+import { EFilterPriority, EFilterStatus, ITask, ITasksContext } from "./TaskContext.types";
 
-export interface Task {
-  id: number;
-  title: string;
-  summary: string;
-  dueDate: Date | null;
-  priority: "High" | "Medium" | "Low";
-  completed: boolean;
-}
-
-const TasksContext = createContext<TasksContextType | undefined>(undefined);
+const TasksContext = createContext<ITasksContext | undefined>(undefined);
 
 export const useTasks = () => {
   const context = useContext(TasksContext);
@@ -27,18 +18,18 @@ export const useTasks = () => {
   return context;
 };
 
-const saveTasksToLocalStorage = (tasks: Task[]) => {
+const saveTasksToLocalStorage = (tasks: ITask[]) => {
   if (typeof window !== "undefined") {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
 };
 
-const loadTasksFromLocalStorage = (): Task[] => {
+const loadTasksFromLocalStorage = (): ITask[] => {
   if (typeof window !== "undefined") {
     const tasks = localStorage.getItem("tasks");
     if (!tasks) return [];
     try {
-      const parsedTasks: Task[] = JSON.parse(tasks);
+      const parsedTasks: ITask[] = JSON.parse(tasks);
       return parsedTasks.map((task) => ({
         ...task,
         dueDate: task.dueDate ? new Date(task.dueDate) : null,
@@ -51,33 +42,35 @@ const loadTasksFromLocalStorage = (): Task[] => {
   return [];
 };
 
-const sortTasks = (tasks: Task[]): Task[] => {
-  const priorityOrder: { [key in Task["priority"]]: number } = {
-    High: 1,
-    Medium: 2,
-    Low: 3,
+const sortTasks = (tasks: ITask[]): ITask[] => {
+  const priorityOrder: { [key in EFilterPriority]: number } = {
+    [EFilterPriority.High]: 1,
+    [EFilterPriority.Medium]: 2,
+    [EFilterPriority.Low]: 3,
+    [EFilterPriority.All]: 4,
   };
   return tasks.sort((a, b) => {
     if (a.completed !== b.completed) {
       return a.completed ? 1 : -1;
     }
-    return priorityOrder[a.priority] - priorityOrder[b.priority];
+    return priorityOrder[a.priority as unknown as EFilterPriority] - priorityOrder[b.priority as unknown as EFilterPriority];
   });
 };
 
+
 const filterTasks = (
-  tasks: Task[],
-  filterStatus: string,
-  filterPriority: string,
+  tasks: ITask[],
+  filterStatus: EFilterStatus,
+  filterPriority: EFilterPriority,
   filterDueDate: Date | null
-): Task[] => {
+): ITask[] => {
   return tasks.filter((task) => {
     const statusMatch =
-      filterStatus === "all" ||
-      (filterStatus === "active" ? !task.completed : task.completed);
+      filterStatus === EFilterStatus.All ||
+      (filterStatus === EFilterStatus.Active ? !task.completed : task.completed);
 
     const priorityMatch =
-      filterPriority === "all" || task.priority === filterPriority;
+      filterPriority === EFilterPriority.All || (task.priority as unknown as EFilterPriority) === filterPriority;
 
     const dueDateMatch =
       filterDueDate === null || (task.dueDate && task.dueDate <= filterDueDate);
@@ -87,21 +80,17 @@ const filterTasks = (
 };
 
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<ITask[]>([]);
 
-  const [filterStatus, setFilterStatus] = useState<
-    "all" | "active" | "completed"
-  >("all");
+  const [filterStatus, setFilterStatus] = useState<EFilterStatus>(EFilterStatus.All);
 
-  const [filterPriority, setFilterPriority] = useState<
-    "High" | "Medium" | "Low" | "all"
-  >("all");
+  const [filterPriority, setFilterPriority] = useState<EFilterPriority>(EFilterPriority.All);
 
   const [filterDueDate, setFilterDueDate] = useState<Date | null>(null);
 
-  const [history, setHistory] = useState<Task[][]>([]);
+  const [history, setHistory] = useState<ITask[][]>([]);
 
-  const [redoStack, setRedoStack] = useState<Task[][]>([]);
+  const [redoStack, setRedoStack] = useState<ITask[][]>([]);
 
   useEffect(() => {
     if (tasks.length > 0) {
@@ -118,7 +107,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     setHistory((prevHistory) => [...prevHistory, tasks]);
   };
 
-  const addTask = (task: Omit<Task, "id" | "completed">) => {
+  const addTask = (task: Omit<ITask, "id" | "completed">) => {
     const newTask = { ...task, id: Date.now(), completed: false };
     setTasks((prevTasks) => sortTasks([...prevTasks, newTask]));
     saveHistoryState();
@@ -129,7 +118,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     saveHistoryState();
   };
 
-  const editTask = (updatedTask: Task) => {
+  const editTask = (updatedTask: ITask) => {
     setTasks((prevTasks) =>
       sortTasks(
         prevTasks.map((task) =>

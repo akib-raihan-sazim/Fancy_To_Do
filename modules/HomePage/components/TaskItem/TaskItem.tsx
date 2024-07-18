@@ -3,12 +3,13 @@ import { Card, Button, Group, Text, Badge, ActionIcon } from "@mantine/core";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
 
-import { Task, useTasks } from "../TaskContext/TaskContext";
+import { useTasks } from "../TaskContext/TaskContext";
 import DeleteConfirmationModal from "../DeleteConfirmationModal/DeleteConfirmationModel";
 import ToDoForm from "../ToDoForm/ToDoForm";
-import { TaskItemProps } from "./TaskItem.types";
+import { ITaskItemProps } from "./TaskItem.types";
+import { ITask } from "../TaskContext/TaskContext.types";
 
-const TaskItem = ({ task }: TaskItemProps) => {
+const TaskItem = ({ task }: ITaskItemProps) => {
   const { deleteTask, toggleTaskCompletion } = useTasks();
   const [isModalOpen, setModalOpen] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
@@ -18,7 +19,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
     setModalOpen(false);
   };
 
-  const getPriorityColor = (priority: Task["priority"]) => {
+  const getPriorityColor = (priority: ITask["priority"]) => {
     switch (priority) {
       case "High":
         return "blue";
