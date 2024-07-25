@@ -20,7 +20,7 @@ const LandingPageContainer: React.FC = () => {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push("/Home");
+    router.push("/Login");
   };
 
   return (
