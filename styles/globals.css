@@ -30,3 +30,134 @@
   display: flex;
   justify-content: center;
 }
+
+/* Landing Page  */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes move-twink-back {
+  from {background-position: 0 0;}
+  to {background-position: -10000px 5000px;}
+}
+
+@keyframes move-clouds-back {
+  from {background-position: 0 0;}
+  to {background-position: 10000px 0;}
+}
+
+@keyframes alphabetAnimation {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+}
+
+.landing-page-wrapper {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background: #000 url(http://www.script-tutorials.com/demos/360/images/stars.png) repeat top center;
+}
+
+.stars, .twinkling, .clouds {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.twinkling {
+  background: transparent url(http://www.script-tutorials.com/demos/360/images/twinkling.png) repeat top center;
+  animation: move-twink-back 200s linear infinite;
+}
+
+.clouds {
+  background: transparent url(http://www.script-tutorials.com/demos/360/images/clouds.png) repeat top center;
+  animation: move-clouds-back 200s linear infinite;
+}
+
+.landing-page-container {
+  text-align: center;
+  animation: fadeIn 0.8s ease-out;
+  position: relative;
+  z-index: 1;
+}
+
+.landing-title {
+  animation: slideInDown 0.5s ease-out;
+}
+
+.landing-text {
+  animation: slideInUp 0.5s ease-out 0.2s both;
+}
+
+.feature-list {
+  animation: scaleIn 0.5s ease-out 0.4s both;
+}
+
+.get-started-button {
+  animation: slideInUp 0.5s ease-out 0.6s both;
+  transition: transform 0.3s ease;
+}
+
+.get-started-button:hover {
+  transform: scale(1.05);
+}
+
+.get-started-button:active {
+  transform: scale(0.95);
+}
+
+.alphabet-animation {
+  position: absolute;
+  font-size: 24px;
+  color: #fff;
+  opacity: 0;
+  animation: alphabetAnimation 10s linear infinite;
+}
+
+.alphabet-animation:nth-child(2n) {
+  animation-delay: 5s;
+}
