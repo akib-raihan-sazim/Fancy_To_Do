@@ -1,15 +1,19 @@
 import React from "react";
-import {
-  Button,
-  Container,
-  Title,
-  Text,
-  Stack,
-  Group,
-  Box,
-} from "@mantine/core";
+import { Text, Stack, Group } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { FaTasks, FaRocket, FaChartLine } from "react-icons/fa";
+
+import {
+  LandingPageWrapper,
+  Stars,
+  Twinkling,
+  Clouds,
+  LandingContainer,
+  LandingTitle,
+  LandingText,
+  FeatureList,
+  GetStartedButton,
+} from "./LandingPageContainer.styles";
 
 const FeatureItem: React.FC<{ icon: React.ReactNode; text: string }> = ({
   icon,
@@ -25,25 +29,21 @@ const LandingPageContainer: React.FC = () => {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push("/HomePage");
+    router.push("/Home");
   };
 
   return (
-    <Box className="landing-page-wrapper">
-      <div className="stars"></div>
-      <div className="twinkling"></div>
-      <div className="clouds"></div>
-      <Container size="md" className="landing-page-container">
+    <LandingPageWrapper>
+      <Stars />
+      <Twinkling />
+      <Clouds />
+      <LandingContainer>
         <Stack align="center">
-          <Title order={1} className="landing-title">
-            Welcome to Fancy To-Do App
-          </Title>
-
-          <Text size="xl" className="landing-text">
+          <LandingTitle>Welcome to Fancy To-Do App</LandingTitle>
+          <LandingText>
             Organize your tasks efficiently with our user-friendly Todo App.
-          </Text>
-
-          <div className="feature-list">
+          </LandingText>
+          <FeatureList>
             <Stack align="center">
               <FeatureItem
                 icon={<FaTasks size={24} color="#228be6" />}
@@ -58,19 +58,13 @@ const LandingPageContainer: React.FC = () => {
                 text="Track Your Progress"
               />
             </Stack>
-          </div>
-
-          <Button
-            size="xl"
-            fullWidth
-            onClick={handleGetStarted}
-            className="get-started-button"
-          >
+          </FeatureList>
+          <GetStartedButton onClick={handleGetStarted}>
             Get Started
-          </Button>
+          </GetStartedButton>
         </Stack>
-      </Container>
-    </Box>
+      </LandingContainer>
+    </LandingPageWrapper>
   );
 };
 
