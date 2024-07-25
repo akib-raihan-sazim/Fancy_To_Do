@@ -1,0 +1,32 @@
+.title{
+  text-align: center;
+  background: linear-gradient(90deg, #7fa1de, #5b21a2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.taskContent.completed {
+  text-decoration: line-through;
+  color: grey;
+}
+
+.taskFilter{
+  display: flex;
+  justify-content: center;
+  padding-top: 2em;
+}
+
+.clear-task-btn-container{
+  display: flex;
+  justify-content: center;
+}
+
+.left-icon{
+  padding:0 2px;
+  width: 2em;
+}
+
+.undo-redo-space{
+  display: flex;
+  justify-content: center;
+}

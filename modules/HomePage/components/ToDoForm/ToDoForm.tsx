@@ -1,17 +1,20 @@
 import { useEffect } from "react";
-import { Modal, TextInput, Button, Group, Select, Textarea } from "@mantine/core";
+import {
+  Modal,
+  TextInput,
+  Button,
+  Group,
+  Select,
+  Textarea,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 
-import { Task, useTasks } from "../../../contexts/TasksContext";
+import { useTasks } from "../TaskContext/TaskContext";
+import { IToDoFormProps } from "./ToDoForm.types";
+import { EPriority } from "../TaskContext/TaskContext.types";
 
-interface ToDoFormProps {
-  opened: boolean;
-  setOpened: (opened: boolean) => void;
-  editingTask?: Task | null;
-}
-
-const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
+const ToDoForm = ({ opened, setOpened, editingTask }: IToDoFormProps) => {
   const { addTask, editTask } = useTasks();
 
   const form = useForm({
@@ -19,18 +22,22 @@ const ToDoForm = ({ opened, setOpened, editingTask }: ToDoFormProps) => {
       title: "",
       summary: "",
       dueDate: null as Date | null,
-      priority: null as "High" | "Medium" | "Low" | null,
+      priority: null as EPriority | null,
     },
 
     validate: {
       title: (value) => {
         const trimmedValue = value.trim();
-        return trimmedValue.length < 2 ? "Title must have at least 2 letters" : null;
+        return trimmedValue.length < 2
+          ? "Title must have at least 2 letters"
+          : null;
       },
 
       summary: (value) => {
         const trimmedValue = value.trim();
-        return trimmedValue.length < 5 ? "Summary must have at least 5 letters" : null;
+        return trimmedValue.length < 5
+          ? "Summary must have at least 5 letters"
+          : null;
       },
 
       priority: (value) => (value ? null : "Priority is required"),

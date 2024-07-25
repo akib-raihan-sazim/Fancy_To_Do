@@ -1,17 +1,15 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { Card, Button, Group, Text, Badge, ActionIcon } from "@mantine/core";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { FiEdit } from 'react-icons/fi';
+import { FiEdit } from "react-icons/fi";
 
-import { Task, useTasks } from "../../../contexts/TasksContext";
-import DeleteConfirmationModal from './DeleteConfirmationModal';
-import ToDoForm from './ToDoForm';
+import { useTasks } from "../TaskContext/TaskContext";
+import DeleteConfirmationModal from "../DeleteConfirmationModal/DeleteConfirmationModel";
+import ToDoForm from "../ToDoForm/ToDoForm";
+import { ITaskItemProps } from "./TaskItem.types";
+import { ITask } from "../TaskContext/TaskContext.types";
 
-interface TaskItemProps {
-  task: Task;
-}
-
-const TaskItem = ({ task }: TaskItemProps) => {
+const TaskItem = ({ task }: ITaskItemProps) => {
   const { deleteTask, toggleTaskCompletion } = useTasks();
   const [isModalOpen, setModalOpen] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
@@ -21,7 +19,7 @@ const TaskItem = ({ task }: TaskItemProps) => {
     setModalOpen(false);
   };
 
-  const getPriorityColor = (priority: Task["priority"]) => {
+  const getPriorityColor = (priority: ITask["priority"]) => {
     switch (priority) {
       case "High":
         return "blue";
@@ -33,17 +31,28 @@ const TaskItem = ({ task }: TaskItemProps) => {
   };
 
   return (
-    <Card shadow="sm" m="lg" radius="md" withBorder style={{ borderColor: getPriorityColor(task.priority), position: "relative" }}>
+    <Card
+      shadow="sm"
+      m="lg"
+      radius="md"
+      withBorder
+      style={{
+        borderColor: getPriorityColor(task.priority),
+        position: "relative",
+      }}
+    >
       <ActionIcon
         variant="subtle"
         color="red"
-        style={{ position: 'absolute', top: 10, right: 10 }}
+        style={{ position: "absolute", top: 10, right: 10 }}
         onClick={() => setModalOpen(true)}
       >
-        <FaRegTrashAlt size={18}/>
+        <FaRegTrashAlt size={18} />
       </ActionIcon>
       <Group mb="xs">
-        <Text style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+        <Text
+          style={{ textDecoration: task.completed ? "line-through" : "none" }}
+        >
           {task.title}
         </Text>
         <Badge color={getPriorityColor(task.priority)} variant="light">
@@ -51,17 +60,23 @@ const TaskItem = ({ task }: TaskItemProps) => {
         </Badge>
       </Group>
 
-      <Text size="sm" style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+      <Text
+        size="sm"
+        style={{ textDecoration: task.completed ? "line-through" : "none" }}
+      >
         {task.summary}
       </Text>
-      <Text size="xs" style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+      <Text
+        size="xs"
+        style={{ textDecoration: task.completed ? "line-through" : "none" }}
+      >
         Due Date: {task.dueDate ? task.dueDate.toDateString() : "No due date"}
       </Text>
 
       <Group mt="md">
         {!task.completed && (
           <Button variant="outline" onClick={() => setEditModalOpened(true)}>
-            Edit <FiEdit className='left-icon'/>
+            Edit <FiEdit className="left-icon" />
           </Button>
         )}
         <Button
