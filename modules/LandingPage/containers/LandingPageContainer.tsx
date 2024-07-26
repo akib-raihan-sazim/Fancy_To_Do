@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, Stack, Group } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { FaTasks, FaRocket, FaChartLine } from "react-icons/fa";
 
@@ -14,16 +14,7 @@ import {
   FeatureList,
   GetStartedButton,
 } from "./LandingPageContainer.styles";
-
-const FeatureItem: React.FC<{ icon: React.ReactNode; text: string }> = ({
-  icon,
-  text,
-}) => (
-  <Group align="center">
-    {icon}
-    <Text>{text}</Text>
-  </Group>
-);
+import FeatureItem from "../components/FeatureItem";
 
 const LandingPageContainer: React.FC = () => {
   const router = useRouter();
