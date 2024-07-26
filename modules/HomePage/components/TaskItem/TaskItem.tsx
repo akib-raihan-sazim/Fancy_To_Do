@@ -1,20 +1,10 @@
-import { useState } from "react";
 import { Card, Group, Text, Badge } from "@mantine/core";
-
-import { useTasks } from "../TaskContext/TaskContext";
-import { ITaskItemProps } from "./TaskItem.types";
 import Link from "next/link";
-import { getPriorityColor } from "@/utils/priorityUtils";
+
+import { ITaskItemProps } from "./TaskItem.types";
+import { getPriorityColor } from "@/shared/utils/priorityUtils";
 
 const TaskItem = ({ task }: ITaskItemProps) => {
-  const { deleteTask } = useTasks();
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const handleDelete = () => {
-    deleteTask(task.id);
-    setModalOpen(false);
-  };
-
   return (
     <Link href={`/Task/${task.id}`} style={{ textDecoration: "none" }}>
       <Card

@@ -16,7 +16,7 @@ import { useTasks } from "@/modules/HomePage/components/TaskContext/TaskContext"
 import DeleteConfirmationModal from "@/modules/HomePage/components/DeleteConfirmationModal/DeleteConfirmationModel";
 import ToDoForm from "@/modules/HomePage/components/ToDoForm/ToDoForm";
 import { ITask } from "@/modules/HomePage/components/TaskContext/TaskContext.types";
-import { getPriorityColor } from "@/utils/priorityUtils";
+import { getPriorityColor } from "@/shared/utils/priorityUtils";
 
 const TaskDetailContainer = () => {
   const router = useRouter();
