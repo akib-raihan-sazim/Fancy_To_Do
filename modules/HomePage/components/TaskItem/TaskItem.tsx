@@ -1,106 +1,56 @@
 import { useState } from "react";
-import { Card, Button, Group, Text, Badge, ActionIcon } from "@mantine/core";
-import { FaRegTrashAlt } from "react-icons/fa";
-import { FiEdit } from "react-icons/fi";
+import { Card, Group, Text, Badge } from "@mantine/core";
 
 import { useTasks } from "../TaskContext/TaskContext";
-import DeleteConfirmationModal from "../DeleteConfirmationModal/DeleteConfirmationModel";
-import ToDoForm from "../ToDoForm/ToDoForm";
 import { ITaskItemProps } from "./TaskItem.types";
-import { ITask } from "../TaskContext/TaskContext.types";
+import Link from "next/link";
+import { getPriorityColor } from "@/utils/priorityUtils";
 
 const TaskItem = ({ task }: ITaskItemProps) => {
-  const { deleteTask, toggleTaskCompletion } = useTasks();
+  const { deleteTask } = useTasks();
   const [isModalOpen, setModalOpen] = useState(false);
-  const [editModalOpened, setEditModalOpened] = useState(false);
 
   const handleDelete = () => {
     deleteTask(task.id);
     setModalOpen(false);
   };
 
-  const getPriorityColor = (priority: ITask["priority"]) => {
-    switch (priority) {
-      case "High":
-        return "blue";
-      case "Medium":
-        return "green";
-      case "Low":
-        return "red";
-    }
-  };
-
   return (
-    <Card
-      shadow="sm"
-      m="lg"
-      radius="md"
-      withBorder
-      style={{
-        borderColor: getPriorityColor(task.priority),
-        position: "relative",
-      }}
-    >
-      <ActionIcon
-        variant="subtle"
-        color="red"
-        style={{ position: "absolute", top: 10, right: 10 }}
-        onClick={() => setModalOpen(true)}
+    <Link href={`/Task/${task.id}`} style={{ textDecoration: "none" }}>
+      <Card
+        shadow="sm"
+        m="lg"
+        radius="md"
+        withBorder
+        style={{
+          borderColor: getPriorityColor(task.priority),
+          position: "relative",
+        }}
       >
-        <FaRegTrashAlt size={18} />
-      </ActionIcon>
-      <Group mb="xs">
+        <Group mb="xs">
+          <Text
+            style={{ textDecoration: task.completed ? "line-through" : "none" }}
+          >
+            {task.title}
+          </Text>
+          <Badge color={getPriorityColor(task.priority)} variant="light">
+            {task.priority}
+          </Badge>
+        </Group>
         <Text
+          size="sm"
           style={{ textDecoration: task.completed ? "line-through" : "none" }}
         >
-          {task.title}
+          {task.summary}
         </Text>
-        <Badge color={getPriorityColor(task.priority)} variant="light">
-          {task.priority}
-        </Badge>
-      </Group>
-
-      <Text
-        size="sm"
-        style={{ textDecoration: task.completed ? "line-through" : "none" }}
-      >
-        {task.summary}
-      </Text>
-      <Text
-        size="xs"
-        style={{ textDecoration: task.completed ? "line-through" : "none" }}
-      >
-        Due Date: {task.dueDate ? task.dueDate.toDateString() : "No due date"}
-      </Text>
-
-      <Group mt="md">
-        {!task.completed && (
-          <Button variant="outline" onClick={() => setEditModalOpened(true)}>
-            Edit <FiEdit className="left-icon" />
-          </Button>
-        )}
-        <Button
-          variant={task.completed ? "light" : "outline"}
-          color={task.completed ? "green" : "blue"}
-          onClick={() => toggleTaskCompletion(task.id)}
+        <Text
+          size="xs"
+          style={{ textDecoration: task.completed ? "line-through" : "none" }}
         >
-          {task.completed ? "Completed" : "Complete"}
-        </Button>
-      </Group>
-
-      <DeleteConfirmationModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        onConfirm={handleDelete}
-      />
-      {editModalOpened && (
-        <ToDoForm
-          opened={editModalOpened}
-          setOpened={setEditModalOpened}
-          editingTask={task}
-        />
-      )}
-    </Card>
+          Due Date: {task.dueDate ? task.dueDate.toDateString() : "No due date"}
+        </Text>
+      </Card>
+    </Link>
   );
 };
 
