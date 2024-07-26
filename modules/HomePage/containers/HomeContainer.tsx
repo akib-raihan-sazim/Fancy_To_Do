@@ -6,7 +6,7 @@ import ToDoForm from "../components/ToDoForm/ToDoForm";
 import TaskList from "../components/TaskList/TaskList";
 import UndoRedoButtons from "../components/UndoRedoButtons/UndoRedoButtons";
 
-const HomePageContainer = () => {
+const HomeContainer = () => {
   const [opened, setOpened] = useState(false);
 
   const handleToDoForm = () => {
@@ -35,4 +35,4 @@ const HomePageContainer = () => {
   );
 };
 
-export default HomePageContainer;
+export default HomeContainer;

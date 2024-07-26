@@ -108,7 +108,7 @@ export const Clouds = styled.div`
   animation: ${moveCloudsBack} 200s linear infinite;
 `;
 
-export const LandingContainer = styled.div`
+export const LandingBox = styled.div`
   text-align: center;
   animation: ${fadeIn} 0.8s ease-out;
   position: relative;
@@ -117,6 +117,12 @@ export const LandingContainer = styled.div`
 
 export const LandingTitle = styled.h1`
   animation: ${slideInDown} 0.5s ease-out;
+  font-size: 3rem;
+  font-weight: bold;
+  text-align: center;
+  background: linear-gradient(90deg, #7fa1de, #5b21a2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 export const LandingText = styled.p`

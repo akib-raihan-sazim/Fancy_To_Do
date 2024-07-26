@@ -1,5 +1,5 @@
-import LandingPageContainer from "@/modules/LandingPage/containers/LandingPageContainer";
+import LandingContainer from "@/modules/LandingPage/containers/LandingContainer";
 
 export default function Home() {
-  return <LandingPageContainer/>
+  return <LandingContainer />;
 }
