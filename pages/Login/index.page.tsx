@@ -1,10 +1,9 @@
-import LoginPageContainer from '@/modules/LoginPage/containers/LoginPageContainer'
-import React from 'react'
+import React from "react";
+
+import LoginContainer from "@/modules/LoginPage/containers/LoginContainer";
 
 const LoginPage = () => {
-  return (
-    <LoginPageContainer/>
-  )
-}
+  return <LoginContainer />;
+};
 
-export default LoginPage
+export default LoginPage;

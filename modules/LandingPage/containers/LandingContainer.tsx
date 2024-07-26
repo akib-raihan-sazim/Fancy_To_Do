@@ -8,15 +8,15 @@ import {
   Stars,
   Twinkling,
   Clouds,
-  LandingContainer,
   LandingTitle,
+  LandingBox,
   LandingText,
   FeatureList,
   GetStartedButton,
-} from "./LandingPageContainer.styles";
+} from "./LandingContainer.styles";
 import FeatureItem from "../components/FeatureItem";
 
-const LandingPageContainer: React.FC = () => {
+const LandingContainer: React.FC = () => {
   const router = useRouter();
 
   const handleGetStarted = () => {
@@ -28,7 +28,7 @@ const LandingPageContainer: React.FC = () => {
       <Stars />
       <Twinkling />
       <Clouds />
-      <LandingContainer>
+      <LandingBox>
         <Stack align="center">
           <LandingTitle>Welcome to Fancy To-Do App</LandingTitle>
           <LandingText>
@@ -54,9 +54,9 @@ const LandingPageContainer: React.FC = () => {
             Get Started
           </GetStartedButton>
         </Stack>
-      </LandingContainer>
+      </LandingBox>
     </LandingPageWrapper>
   );
 };
 
-export default LandingPageContainer;
+export default LandingContainer;
