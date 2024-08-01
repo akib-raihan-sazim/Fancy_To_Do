@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Button, Container } from "@mantine/core";
+import { Button, Container, Group } from "@mantine/core";
+import { useRouter } from "next/router";
 
 import ToDoForm from "../components/ToDoForm/ToDoForm";
 import TaskList from "../components/TaskList/TaskList";
@@ -7,14 +8,28 @@ import UndoRedoButtons from "../components/UndoRedoButtons/UndoRedoButtons";
 
 const HomeContainer = () => {
   const [opened, setOpened] = useState(false);
+  const router = useRouter();
 
   const handleToDoForm = () => {
     setOpened(true);
   };
 
+  const handleLogout = () => {
+    router.push("/");
+  };
+
   return (
     <Container>
-      <h1 className="title">Fancy To-Do With TypeScript</h1>
+      <Group mb="md">
+        <h1 className="title">Fancy To-Do With TypeScript</h1>
+        <Button
+          variant="gradient"
+          gradient={{ from: "red", to: "blue", deg: 90 }}
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
+      </Group>
       <Button
         fullWidth
         variant="gradient"
