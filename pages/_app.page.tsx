@@ -4,10 +4,14 @@ import "@mantine/dates/styles.css";
 import { MantineProvider } from "@mantine/core";
 import type { AppProps } from "next/app";
 
+import { TasksProvider } from "@/modules/HomePage/components/TaskContext/TaskContext";
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <MantineProvider defaultColorScheme="dark">
-      <Component {...pageProps} />
+      <TasksProvider>
+        <Component {...pageProps} />
+      </TasksProvider>
     </MantineProvider>
   );
 }
