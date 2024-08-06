@@ -1,8 +1,9 @@
 import { Card, Group, Text, Badge } from "@mantine/core";
 import Link from "next/link";
 
-import { ITaskItemProps } from "./TaskItem.types";
+import { formatDate } from "@/helper/tasks.helper";
 import { getPriorityColor } from "@/shared/utils/priorityUtils";
+import { ITaskItemProps } from "./TaskItem.types";
 
 const TaskItem = ({ task }: ITaskItemProps) => {
   return (
@@ -37,7 +38,7 @@ const TaskItem = ({ task }: ITaskItemProps) => {
           size="xs"
           style={{ textDecoration: task.completed ? "line-through" : "none" }}
         >
-          Due Date: {task.dueDate ? task.dueDate.toDateString() : "No due date"}
+          Due Date: {formatDate(task.dueDate)}
         </Text>
       </Card>
     </Link>

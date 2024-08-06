@@ -6,6 +6,7 @@ import {
   useEffect,
 } from "react";
 
+import { useGetTasksQuery } from "@/shared/redux/rtk-apis/apiSlice";
 import { EFilterPriority, EFilterStatus, ITask, ITasksContext } from "./TaskContext.types";
 
 const TasksContext = createContext<ITasksContext | undefined>(undefined);
@@ -49,7 +50,9 @@ const sortTasks = (tasks: ITask[]): ITask[] => {
     [EFilterPriority.Low]: 3,
     [EFilterPriority.All]: 4,
   };
-  return tasks.sort((a, b) => {
+  const sortedTasks = [...tasks];
+
+  return sortedTasks.sort((a, b) => {
     if (a.completed !== b.completed) {
       return a.completed ? 1 : -1;
     }
@@ -82,6 +85,8 @@ const filterTasks = (
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<ITask[]>([]);
 
+  const {data: fetchedTasks} = useGetTasksQuery();
+
   const [filterStatus, setFilterStatus] = useState<EFilterStatus>(EFilterStatus.All);
 
   const [filterPriority, setFilterPriority] = useState<EFilterPriority>(EFilterPriority.All);
@@ -99,9 +104,10 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   }, [tasks]);
 
   useEffect(() => {
-    const loadedTasks = loadTasksFromLocalStorage();
-    setTasks(sortTasks(loadedTasks));
-  }, []);
+    if(fetchedTasks){
+      setTasks(sortTasks(fetchedTasks));
+    }
+  }, [fetchedTasks]);
 
   const saveHistoryState = () => {
     setHistory((prevHistory) => [...prevHistory, tasks]);
