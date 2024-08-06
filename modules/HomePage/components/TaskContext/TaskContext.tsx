@@ -150,15 +150,24 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const toggleTaskCompletion = (id: number) => {
-    setTasks((prevTasks) =>
-      sortTasks(
-        prevTasks.map((task) =>
-          task.id === id ? { ...task, completed: !task.completed } : task
-        )
-      )
-    );
-    saveHistoryState();
+  const toggleTaskCompletion = async (id: number) => {
+    try {
+      const taskToUpdate = tasks.find(task => task.id === id);
+      if (taskToUpdate) {
+        const updatedTask = { ...taskToUpdate, completed: !taskToUpdate.completed };
+        const result = await updateTask(updatedTask).unwrap();
+        setTasks((prevTasks) =>
+          sortTasks(
+            prevTasks.map((task) =>
+              task.id === result.id ? result : task
+            )
+          )
+        );
+        saveHistoryState();
+      }
+    } catch (error) {
+      console.error("Failed to toggle task completion:", error);
+    }
   };
 
   const filteredTasks = filterTasks(
