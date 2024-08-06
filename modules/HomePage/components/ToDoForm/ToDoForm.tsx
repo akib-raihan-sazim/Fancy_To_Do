@@ -58,12 +58,18 @@ const ToDoForm = ({ opened, setOpened, editingTask }: IToDoFormProps) => {
 
   const handleCreateOrEditTask = (values: typeof form.values) => {
     const { title, summary, dueDate, priority } = values;
+    const dueDateUTC = dueDate ? new Date(Date.UTC(
+      dueDate.getFullYear(),
+      dueDate.getMonth(),
+      dueDate.getDate()
+    )) : null;
+
     if (!priority) {
       form.setFieldError("priority", "Priority is required");
       return;
     }
     if (editingTask) {
-      editTask({ ...editingTask, title, summary, dueDate, priority });
+      editTask({ ...editingTask, title, summary, dueDate: dueDateUTC, priority });
     } else {
       addTask({ title, summary, dueDate, priority });
     }
