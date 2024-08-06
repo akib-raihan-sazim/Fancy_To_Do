@@ -18,7 +18,15 @@ export const apiSlice = createApi({
                 body: task,
             })
         }),
+
+        updateTask: builder.mutation<ITask, ITask>({
+            query: (task) => ({
+              url: `/tasks/${task.id}`,
+              method: 'PUT',
+              body: task,
+            }),
+        }),
     })
 })
 
-export const {useGetTasksQuery, useCreateTaskMutation} = apiSlice
+export const {useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation} = apiSlice
