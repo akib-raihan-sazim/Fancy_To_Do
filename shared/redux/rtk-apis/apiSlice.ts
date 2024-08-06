@@ -27,6 +27,13 @@ export const apiSlice = createApi({
             }),
         }),
 
+        deleteTask: builder.mutation<void, number>({
+            query: (taskId) => ({
+              url: `/tasks/${taskId}`,
+              method: 'DELETE',
+            }),
+        }),
+
         clearCompletedTasks: builder.mutation<void, void>({
             query: () => ({
               url: '/tasks/completed',
@@ -36,4 +43,4 @@ export const apiSlice = createApi({
     })
 })
 
-export const {useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useClearCompletedTasksMutation} = apiSlice
+export const {useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useClearCompletedTasksMutation, useDeleteTaskMutation} = apiSlice
