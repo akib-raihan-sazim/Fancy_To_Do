@@ -76,7 +76,7 @@ const ToDoForm = ({ opened, setOpened, editingTask }: IToDoFormProps) => {
       form.setValues({
         title: editingTask.title,
         summary: editingTask.summary,
-        dueDate: editingTask.dueDate,
+        dueDate: editingTask.dueDate ? new Date(editingTask.dueDate) : null,
         priority: editingTask.priority,
       });
     } else {
