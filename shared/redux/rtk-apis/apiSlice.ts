@@ -1,6 +1,7 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react"
 
 import { ITask } from "@/modules/HomePage/components/TaskContext/TaskContext.types"
+import { TCreateTaskDto } from "@/shared/typedefs/types"
 
 export const apiSlice = createApi({
     reducerPath: 'api',
@@ -8,8 +9,16 @@ export const apiSlice = createApi({
     endpoints: (builder) => ({
         getTasks: builder.query<ITask[], void>({
             query: () => '/tasks',
-        })
+        }),
+
+        createTask: builder.mutation<ITask, TCreateTaskDto>({
+            query:(task) => ({
+                url: "/tasks",
+                method: "POST",
+                body: task,
+            })
+        }),
     })
 })
 
-export const {useGetTasksQuery} = apiSlice
+export const {useGetTasksQuery, useCreateTaskMutation} = apiSlice

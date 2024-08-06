@@ -6,7 +6,7 @@ import {
   useEffect,
 } from "react";
 
-import { useGetTasksQuery } from "@/shared/redux/rtk-apis/apiSlice";
+import { useGetTasksQuery, useCreateTaskMutation } from "@/shared/redux/rtk-apis/apiSlice";
 import { EFilterPriority, EFilterStatus, ITask, ITasksContext } from "./TaskContext.types";
 
 const TasksContext = createContext<ITasksContext | undefined>(undefined);
@@ -87,6 +87,8 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   const {data: fetchedTasks} = useGetTasksQuery();
 
+  const [createTask] = useCreateTaskMutation();
+
   const [filterStatus, setFilterStatus] = useState<EFilterStatus>(EFilterStatus.All);
 
   const [filterPriority, setFilterPriority] = useState<EFilterPriority>(EFilterPriority.All);
@@ -113,10 +115,15 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     setHistory((prevHistory) => [...prevHistory, tasks]);
   };
 
-  const addTask = (task: Omit<ITask, "id" | "completed">) => {
-    const newTask = { ...task, id: Date.now(), completed: false };
-    setTasks((prevTasks) => sortTasks([...prevTasks, newTask]));
-    saveHistoryState();
+  const addTask = async (task: Omit<ITask, "id" | "completed">) => {
+    try {
+      const result = await createTask(task).unwrap();
+      const newTask = { ...result, completed: false };
+      setTasks((prevTasks) => sortTasks([...prevTasks, newTask]));
+      saveHistoryState();
+    } catch (error) {
+      console.error("Failed to create task:", error);
+    }
   };
 
   const deleteTask = (id: number) => {
