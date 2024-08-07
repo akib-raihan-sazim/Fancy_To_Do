@@ -10,12 +10,17 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 
-import { useTasks } from "../TaskContext/TaskContext";
+import { useCreateTaskMutation, useUpdateTaskMutation } from "@/shared/redux/rtk-apis/apiSlice";
+
+import { sortTasks, useTasks } from "../TaskContext/TaskContext";
 import { IToDoFormProps } from "./ToDoForm.types";
 import { EPriority } from "../TaskContext/TaskContext.types";
 
+
 const ToDoForm = ({ opened, setOpened, editingTask }: IToDoFormProps) => {
-  const { addTask, editTask } = useTasks();
+  const [createTask] = useCreateTaskMutation();
+  const [updateTask] = useUpdateTaskMutation();
+  const { setTasks, saveHistoryState } = useTasks();
 
   const form = useForm({
     initialValues: {
@@ -56,7 +61,7 @@ const ToDoForm = ({ opened, setOpened, editingTask }: IToDoFormProps) => {
     },
   });
 
-  const handleCreateOrEditTask = (values: typeof form.values) => {
+  const handleCreateOrEditTask = async (values: typeof form.values) => {
     const { title, summary, dueDate, priority } = values;
     const dueDateUTC = dueDate ? new Date(Date.UTC(
       dueDate.getFullYear(),
@@ -68,13 +73,21 @@ const ToDoForm = ({ opened, setOpened, editingTask }: IToDoFormProps) => {
       form.setFieldError("priority", "Priority is required");
       return;
     }
-    if (editingTask) {
-      editTask({ ...editingTask, title, summary, dueDate: dueDateUTC, priority });
-    } else {
-      addTask({ title, summary, dueDate, priority });
+
+    try {
+      if (editingTask) {
+        const result = await updateTask({ ...editingTask, title, summary, dueDate: dueDateUTC, priority }).unwrap();
+        setTasks(prevTasks => sortTasks(prevTasks.map(task => task.id === result.id ? result : task)));
+      } else {
+        const result = await createTask({ title, summary, dueDate: dueDateUTC, priority }).unwrap();
+        setTasks(prevTasks => sortTasks([...prevTasks, result]));
+      }
+      saveHistoryState();
+      setOpened(false);
+      form.reset();
+    } catch (error) {
+      console.error("Failed to create/edit task:", error);
     }
-    setOpened(false);
-    form.reset();
   };
 
   useEffect(() => {

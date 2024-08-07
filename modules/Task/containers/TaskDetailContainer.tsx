@@ -18,14 +18,16 @@ import ToDoForm from "@/modules/HomePage/components/ToDoForm/ToDoForm";
 import { ITask } from "@/modules/HomePage/components/TaskContext/TaskContext.types";
 import { getPriorityColor } from "@/shared/utils/priorityUtils";
 import { formatDate } from "@/helper/tasks.helper";
+import { useDeleteTaskMutation } from "@/shared/redux/rtk-apis/apiSlice";
 
 const TaskDetailContainer = () => {
   const router = useRouter();
   const { taskId } = router.query;
-  const { tasks, deleteTask, editTask, toggleTaskCompletion } = useTasks();
+  const { tasks, toggleTaskCompletion, setTasks, saveHistoryState } = useTasks();
   const [task, setTask] = useState<ITask | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
+  const [deleteTask] = useDeleteTaskMutation();
 
   useEffect(() => {
     if (taskId && tasks) {
@@ -36,10 +38,16 @@ const TaskDetailContainer = () => {
     }
   }, [taskId, tasks]);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (task) {
-      deleteTask(task.id);
-      router.push("/Home");
+      try {
+        await deleteTask(task.id).unwrap();
+        setTasks((prevTasks) => prevTasks.filter((t) => t.id !== task.id));
+        router.push("/Home");
+      } catch (error) {
+        console.error("Failed to delete task:", error);
+      }
+      saveHistoryState()
     }
   };
 
@@ -97,9 +105,7 @@ const TaskDetailContainer = () => {
             </Badge>
           </Group>
         </Box>
-        <Text mb="md">
-          Due Date: {formatDate(task.dueDate)}
-        </Text>
+        <Text mb="md">Due Date: {formatDate(task.dueDate)}</Text>
         <Group mt="xl">
           <Button variant="outline" onClick={() => setEditModalOpened(true)}>
             Edit <FaEdit className="left-icon" />

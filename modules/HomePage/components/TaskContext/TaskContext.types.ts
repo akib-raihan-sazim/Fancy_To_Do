@@ -1,15 +1,15 @@
+import {Dispatch, SetStateAction } from "react";
+
 export interface ITasksContext {
     tasks: ITask[];
-    addTask: (task: Omit<ITask, "id" | "completed">) => void;
-    deleteTask: (id: number) => void;
-    editTask: (updatedTask: ITask) => void;
+    setTasks: Dispatch<SetStateAction<ITask[]>>;
     toggleTaskCompletion: (id: number) => void;
     setFilterStatus: (status: EFilterStatus) => void;
     setFilterPriority: (priority: EFilterPriority) => void;
     setFilterDueDate: (dueDate: Date | null) => void;
-    clearCompletedTasks: () => void;
     undoLastAction: () => void;
     redoLastAction: () => void;
+    saveHistoryState: () => void;
 }
 
 export enum EPriority {
