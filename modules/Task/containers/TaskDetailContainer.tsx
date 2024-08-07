@@ -12,22 +12,29 @@ import {
 } from "@mantine/core";
 import { FaArrowLeft, FaEdit, FaTrash, FaCheck } from "react-icons/fa";
 
-import { useTasks } from "@/modules/HomePage/components/TaskContext/TaskContext";
+import {
+  sortTasks,
+  useTasks,
+} from "@/modules/HomePage/components/TaskContext/TaskContext";
 import DeleteConfirmationModal from "@/modules/HomePage/components/DeleteConfirmationModal/DeleteConfirmationModel";
 import ToDoForm from "@/modules/HomePage/components/ToDoForm/ToDoForm";
 import { ITask } from "@/modules/HomePage/components/TaskContext/TaskContext.types";
 import { getPriorityColor } from "@/shared/utils/priorityUtils";
 import { formatDate } from "@/helper/tasks.helper";
-import { useDeleteTaskMutation } from "@/shared/redux/rtk-apis/apiSlice";
+import {
+  useDeleteTaskMutation,
+  useToggleTaskCompletionMutation,
+} from "@/shared/redux/rtk-apis/apiSlice";
 
 const TaskDetailContainer = () => {
   const router = useRouter();
   const { taskId } = router.query;
-  const { tasks, toggleTaskCompletion, setTasks, saveHistoryState } = useTasks();
+  const { tasks, setTasks, saveHistoryState } = useTasks();
   const [task, setTask] = useState<ITask | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [deleteTask] = useDeleteTaskMutation();
+  const [toggleTaskCompletion] = useToggleTaskCompletionMutation();
 
   useEffect(() => {
     if (taskId && tasks) {
@@ -47,7 +54,27 @@ const TaskDetailContainer = () => {
       } catch (error) {
         console.error("Failed to delete task:", error);
       }
-      saveHistoryState()
+      saveHistoryState();
+    }
+  };
+
+  const handleToggleCompletion = async () => {
+    if (task) {
+      try {
+        const updatedTask = {
+          ...task,
+          completed: !task.completed,
+        };
+        const result = await toggleTaskCompletion(updatedTask.id).unwrap();
+        setTasks((prevTasks) =>
+          sortTasks(
+            prevTasks.map((task) => (task.id === result.id ? result : task))
+          )
+        );
+      } catch (error) {
+        console.error("Failed to toggle task completion:", error);
+      }
+      saveHistoryState();
     }
   };
 
@@ -112,7 +139,7 @@ const TaskDetailContainer = () => {
           </Button>
           <Button
             color={task.completed ? "gray" : "blue"}
-            onClick={() => toggleTaskCompletion(task.id)}
+            onClick={handleToggleCompletion}
           >
             {task.completed ? "Mark as Incomplete" : "Mark as Done"}
             <FaCheck className="left-icon" />

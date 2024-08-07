@@ -40,7 +40,14 @@ export const apiSlice = createApi({
               method: 'DELETE',
             }),
         }),
+
+        toggleTaskCompletion: builder.mutation<ITask, number>({
+            query: (taskId) => ({
+                url: `/tasks/${taskId}/complete`,
+                method: 'PATCH',
+            }),
+        }),
     })
 })
 
-export const {useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useClearCompletedTasksMutation, useDeleteTaskMutation} = apiSlice
+export const {useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useClearCompletedTasksMutation, useDeleteTaskMutation, useToggleTaskCompletionMutation} = apiSlice

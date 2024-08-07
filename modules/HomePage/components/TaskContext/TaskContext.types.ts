@@ -3,7 +3,6 @@ import {Dispatch, SetStateAction } from "react";
 export interface ITasksContext {
     tasks: ITask[];
     setTasks: Dispatch<SetStateAction<ITask[]>>;
-    toggleTaskCompletion: (id: number) => void;
     setFilterStatus: (status: EFilterStatus) => void;
     setFilterPriority: (priority: EFilterPriority) => void;
     setFilterDueDate: (dueDate: Date | null) => void;
