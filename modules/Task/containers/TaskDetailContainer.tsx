@@ -17,6 +17,7 @@ import DeleteConfirmationModal from "@/modules/HomePage/components/DeleteConfirm
 import ToDoForm from "@/modules/HomePage/components/ToDoForm/ToDoForm";
 import { ITask } from "@/modules/HomePage/components/TaskContext/TaskContext.types";
 import { getPriorityColor } from "@/shared/utils/priorityUtils";
+import { formatDate } from "@/helper/tasks.helper";
 
 const TaskDetailContainer = () => {
   const router = useRouter();
@@ -97,7 +98,7 @@ const TaskDetailContainer = () => {
           </Group>
         </Box>
         <Text mb="md">
-          Due Date: {task.dueDate ? task.dueDate.toDateString() : "No due date"}
+          Due Date: {formatDate(task.dueDate)}
         </Text>
         <Group mt="xl">
           <Button variant="outline" onClick={() => setEditModalOpened(true)}>
