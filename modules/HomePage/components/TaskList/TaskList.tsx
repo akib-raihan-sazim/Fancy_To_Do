@@ -1,47 +1,49 @@
-import { Select, Group, Button, Container } from "@mantine/core";
-import { useState } from "react";
+import { Select, Group, Button, Container, Pagination } from "@mantine/core";
+import { useState, useEffect } from "react";
 import { DateInput } from "@mantine/dates";
 
 import { useClearCompletedTasksMutation } from "@/shared/redux/rtk-apis/apiSlice";
 
-import { useTasks } from "../TaskContext/TaskContext";
+import { filterTasks, useTasks } from "../TaskContext/TaskContext";
 import TaskItem from "../TaskItem/TaskItem";
-import { EFilterPriority, EFilterStatus, EPriority } from "../TaskContext/TaskContext.types";
+import { EFilterPriority, EFilterStatus, EPriority, ITask } from "../TaskContext/TaskContext.types";
+
+const TASKS_PER_PAGE = 5;
 
 const TaskList = () => {
   const {
     tasks,
+    setTasks,
     setFilterStatus,
     setFilterPriority,
     setFilterDueDate,
-    setTasks,
     saveHistoryState,
   } = useTasks();
 
   const [filterStatus, setFilterStatusState] = useState<EFilterStatus>(EFilterStatus.All);
-
   const [filterPriority, setFilterPriorityState] = useState<EFilterPriority>(EFilterPriority.All);
-
   const [filterDueDate, setFilterDueDateState] = useState<Date | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [clearCompletedTasks] = useClearCompletedTasksMutation();
 
   const handleFilterStatusChange = (value: EFilterStatus) => {
     setFilterStatus(value);
     setFilterStatusState(value);
+    setCurrentPage(1); 
   };
 
-  const handleFilterPriorityChange = (
-    value: EFilterPriority
-  ) => {
+  const handleFilterPriorityChange = (value: EFilterPriority) => {
     setFilterPriority(value);
     setFilterPriorityState(value);
+    setCurrentPage(1); 
   };
 
   const handleFilterDueDateChange = (date: Date | null) => {
     setFilterDueDate(date);
     setFilterDueDateState(date);
+    setCurrentPage(1);
   };
-
-  const [clearCompletedTasks] = useClearCompletedTasksMutation()
 
   const handleClearCompletedTasks = async () => {
     try {
@@ -52,6 +54,13 @@ const TaskList = () => {
       console.error("Failed to clear completed tasks:", error);
     }
   };
+
+  const filteredTasks = filterTasks(tasks, filterStatus, filterPriority, filterDueDate);
+  
+  const totalPages = Math.ceil(filteredTasks.length / TASKS_PER_PAGE);
+  const startIndex = (currentPage - 1) * TASKS_PER_PAGE;
+  const endIndex = startIndex + TASKS_PER_PAGE;
+  const tasksToDisplay = filteredTasks.slice(startIndex, endIndex);
 
   return (
     <div className="taskList">
@@ -65,29 +74,23 @@ const TaskList = () => {
           <Select
             placeholder="Filter by Status"
             data={[
-              { value: "all", label: "All" },
-              { value: "active", label: "Active" },
-              { value: "completed", label: "Completed" },
+              { value: EFilterStatus.All, label: "All" },
+              { value: EFilterStatus.Active, label: "Active" },
+              { value: EFilterStatus.Completed, label: "Completed" },
             ]}
             value={filterStatus}
-            onChange={(value) =>
-              handleFilterStatusChange(value as EFilterStatus)
-            }
+            onChange={(value) => handleFilterStatusChange(value as EFilterStatus)}
           />
           <Select
             placeholder="Filter by Priority"
             data={[
-              { value: "all", label: "All" },
-              { value: "High", label: "High" },
-              { value: "Medium", label: "Medium" },
-              { value: "Low", label: "Low" },
+              { value: EFilterPriority.All, label: "All" },
+              { value: EPriority.High, label: "High" },
+              { value: EPriority.Medium, label: "Medium" },
+              { value: EPriority.Low, label: "Low" },
             ]}
             value={filterPriority}
-            onChange={(value) =>
-              handleFilterPriorityChange(
-                value as EFilterPriority
-              )
-            }
+            onChange={(value) => handleFilterPriorityChange(value as EFilterPriority)}
           />
           <DateInput
             placeholder="Filter by Due Date"
@@ -105,9 +108,17 @@ const TaskList = () => {
           </Button>
         </Group>
       </div>
-      {tasks.map((task) => (
+      {tasksToDisplay.map((task) => (
         <TaskItem key={task.id} task={task} />
       ))}
+      <Container className="pagination-container">
+        <Pagination
+          value={currentPage}
+          onChange={(page) => setCurrentPage(page)}
+          total={totalPages}
+          siblings={1}
+        />
+      </Container>
     </div>
   );
 };
