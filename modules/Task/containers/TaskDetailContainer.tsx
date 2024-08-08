@@ -18,7 +18,7 @@ import {
 } from "@/modules/HomePage/components/TaskContext/TaskContext";
 import DeleteConfirmationModal from "@/modules/HomePage/components/DeleteConfirmationModal/DeleteConfirmationModel";
 import ToDoForm from "@/modules/HomePage/components/ToDoForm/ToDoForm";
-import { ITask } from "@/modules/HomePage/components/TaskContext/TaskContext.types";
+import { EFilterStatus, ITask } from "@/modules/HomePage/components/TaskContext/TaskContext.types";
 import { getPriorityColor } from "@/shared/utils/priorityUtils";
 import { formatDate } from "@/helper/tasks.helper";
 import {
@@ -29,7 +29,7 @@ import {
 const TaskDetailContainer = () => {
   const router = useRouter();
   const { taskId } = router.query;
-  const { tasks, setTasks, saveHistoryState } = useTasks();
+  const { tasks, setTasks, saveHistoryState, filterStatus } = useTasks();
   const [task, setTask] = useState<ITask | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
@@ -75,6 +75,9 @@ const TaskDetailContainer = () => {
         console.error("Failed to toggle task completion:", error);
       }
       saveHistoryState();
+      if (filterStatus !== EFilterStatus.All) {
+        router.push("/Home");
+      }
     }
   };
 

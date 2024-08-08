@@ -6,7 +6,11 @@ import { useClearCompletedTasksMutation } from "@/shared/redux/rtk-apis/apiSlice
 
 import { filterTasks, useTasks } from "../TaskContext/TaskContext";
 import TaskItem from "../TaskItem/TaskItem";
-import { EFilterPriority, EFilterStatus, EPriority, ITask } from "../TaskContext/TaskContext.types";
+import {
+  EFilterPriority,
+  EFilterStatus,
+  EPriority,
+} from "../TaskContext/TaskContext.types";
 
 const TASKS_PER_PAGE = 5;
 
@@ -18,30 +22,27 @@ const TaskList = () => {
     setFilterPriority,
     setFilterDueDate,
     saveHistoryState,
+    filterStatus,
+    filterPriority,
+    filterDueDate,
   } = useTasks();
 
-  const [filterStatus, setFilterStatusState] = useState<EFilterStatus>(EFilterStatus.All);
-  const [filterPriority, setFilterPriorityState] = useState<EFilterPriority>(EFilterPriority.All);
-  const [filterDueDate, setFilterDueDateState] = useState<Date | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [clearCompletedTasks] = useClearCompletedTasksMutation();
 
   const handleFilterStatusChange = (value: EFilterStatus) => {
     setFilterStatus(value);
-    setFilterStatusState(value);
     setCurrentPage(1); 
   };
 
   const handleFilterPriorityChange = (value: EFilterPriority) => {
     setFilterPriority(value);
-    setFilterPriorityState(value);
-    setCurrentPage(1); 
+    setCurrentPage(1);
   };
 
   const handleFilterDueDateChange = (date: Date | null) => {
     setFilterDueDate(date);
-    setFilterDueDateState(date);
     setCurrentPage(1);
   };
 
@@ -55,8 +56,13 @@ const TaskList = () => {
     }
   };
 
-  const filteredTasks = filterTasks(tasks, filterStatus, filterPriority, filterDueDate);
-  
+  const filteredTasks = filterTasks(
+    tasks,
+    filterStatus,
+    filterPriority,
+    filterDueDate
+  );
+
   const totalPages = Math.ceil(filteredTasks.length / TASKS_PER_PAGE);
   const startIndex = (currentPage - 1) * TASKS_PER_PAGE;
   const endIndex = startIndex + TASKS_PER_PAGE;
@@ -79,7 +85,9 @@ const TaskList = () => {
               { value: EFilterStatus.Completed, label: "Completed" },
             ]}
             value={filterStatus}
-            onChange={(value) => handleFilterStatusChange(value as EFilterStatus)}
+            onChange={(value) =>
+              handleFilterStatusChange(value as EFilterStatus)
+            }
           />
           <Select
             placeholder="Filter by Priority"
@@ -90,7 +98,9 @@ const TaskList = () => {
               { value: EPriority.Low, label: "Low" },
             ]}
             value={filterPriority}
-            onChange={(value) => handleFilterPriorityChange(value as EFilterPriority)}
+            onChange={(value) =>
+              handleFilterPriorityChange(value as EFilterPriority)
+            }
           />
           <DateInput
             placeholder="Filter by Due Date"
@@ -117,6 +127,9 @@ const TaskList = () => {
           onChange={(page) => setCurrentPage(page)}
           total={totalPages}
           siblings={1}
+          style={{
+            marginBottom: "2em"
+          }}
         />
       </Container>
     </div>

@@ -11,6 +11,9 @@ export interface ITasksContext {
     setFilterPriority: (priority: EFilterPriority) => void;
     setFilterDueDate: (dueDate: Date | null) => void;
     saveHistoryState: () => void;
+    filterStatus:EFilterStatus;
+    filterPriority:EFilterPriority;
+    filterDueDate: Date | null;
 }
 
 export enum EPriority {
