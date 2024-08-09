@@ -6,15 +6,17 @@ import {
   useEffect,
 } from "react";
 
-import { 
-  useGetTasksQuery, 
-  useCreateTaskMutation, 
-  useUpdateTaskMutation, 
-  useClearCompletedTasksMutation, 
-  useDeleteTaskMutation 
+import {
+  useGetTasksQuery,
+  useUpdateTaskMutation,
 } from "@/shared/redux/rtk-apis/apiSlice";
 
-import { EFilterPriority, EFilterStatus, ITask, ITasksContext } from "./TaskContext.types";
+import {
+  EFilterPriority,
+  EFilterStatus,
+  ITask,
+  ITasksContext,
+} from "./TaskContext.types";
 
 const TasksContext = createContext<ITasksContext | undefined>(undefined);
 
@@ -50,7 +52,7 @@ const loadTasksFromLocalStorage = (): ITask[] => {
   return [];
 };
 
-const sortTasks = (tasks: ITask[]): ITask[] => {
+export const sortTasks = (tasks: ITask[]): ITask[] => {
   const priorityOrder: { [key in EFilterPriority]: number } = {
     [EFilterPriority.High]: 1,
     [EFilterPriority.Medium]: 2,
@@ -63,10 +65,12 @@ const sortTasks = (tasks: ITask[]): ITask[] => {
     if (a.completed !== b.completed) {
       return a.completed ? 1 : -1;
     }
-    return priorityOrder[a.priority as unknown as EFilterPriority] - priorityOrder[b.priority as unknown as EFilterPriority];
+    return (
+      priorityOrder[a.priority as unknown as EFilterPriority] -
+      priorityOrder[b.priority as unknown as EFilterPriority]
+    );
   });
 };
-
 
 const filterTasks = (
   tasks: ITask[],
@@ -77,10 +81,13 @@ const filterTasks = (
   return tasks.filter((task) => {
     const statusMatch =
       filterStatus === EFilterStatus.All ||
-      (filterStatus === EFilterStatus.Active ? !task.completed : task.completed);
+      (filterStatus === EFilterStatus.Active
+        ? !task.completed
+        : task.completed);
 
     const priorityMatch =
-      filterPriority === EFilterPriority.All || (task.priority as unknown as EFilterPriority) === filterPriority;
+      filterPriority === EFilterPriority.All ||
+      (task.priority as unknown as EFilterPriority) === filterPriority;
 
     const dueDateMatch =
       filterDueDate === null || (task.dueDate && task.dueDate <= filterDueDate);
@@ -92,19 +99,17 @@ const filterTasks = (
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const [tasks, setTasks] = useState<ITask[]>([]);
 
-  const {data: fetchedTasks} = useGetTasksQuery();
-
-  const [createTask] = useCreateTaskMutation();
+  const { data: fetchedTasks } = useGetTasksQuery();
 
   const [updateTask] = useUpdateTaskMutation();
 
-  const [deleteOne] = useDeleteTaskMutation();
+  const [filterStatus, setFilterStatus] = useState<EFilterStatus>(
+    EFilterStatus.All
+  );
 
-  const [clearCompletedTasksMutation] = useClearCompletedTasksMutation();
-
-  const [filterStatus, setFilterStatus] = useState<EFilterStatus>(EFilterStatus.All);
-
-  const [filterPriority, setFilterPriority] = useState<EFilterPriority>(EFilterPriority.All);
+  const [filterPriority, setFilterPriority] = useState<EFilterPriority>(
+    EFilterPriority.All
+  );
 
   const [filterDueDate, setFilterDueDate] = useState<Date | null>(null);
 
@@ -128,53 +133,18 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     setHistory((prevHistory) => [...prevHistory, tasks]);
   };
 
-  const addTask = async (task: Omit<ITask, "id" | "completed">) => {
-    try {
-      const result = await createTask(task).unwrap();
-      const newTask = { ...result, completed: false };
-      setTasks((prevTasks) => sortTasks([...prevTasks, newTask]));
-      saveHistoryState();
-    } catch (error) {
-      console.error("Failed to create task:", error);
-    }
-  };
-
-  const deleteTask = async (id: number) => {
-    try {
-      await deleteOne(id).unwrap();
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-    } catch (error) {
-      console.error("Failed to delete task:", error);
-    }
-  };
-
-  const editTask = async (updatedTask: ITask) => {
-    try {
-      const result = await updateTask(updatedTask).unwrap();
-      setTasks((prevTasks) =>
-        sortTasks(
-          prevTasks.map((task) =>
-            task.id === result.id ? result : task
-          )
-        )
-      );
-      saveHistoryState();
-    } catch (error) {
-      console.error("Failed to update task:", error);
-    }
-  };
-
   const toggleTaskCompletion = async (id: number) => {
     try {
-      const taskToUpdate = tasks.find(task => task.id === id);
+      const taskToUpdate = tasks.find((task) => task.id === id);
       if (taskToUpdate) {
-        const updatedTask = { ...taskToUpdate, completed: !taskToUpdate.completed };
+        const updatedTask = {
+          ...taskToUpdate,
+          completed: !taskToUpdate.completed,
+        };
         const result = await updateTask(updatedTask).unwrap();
         setTasks((prevTasks) =>
           sortTasks(
-            prevTasks.map((task) =>
-              task.id === result.id ? result : task
-            )
+            prevTasks.map((task) => (task.id === result.id ? result : task))
           )
         );
         saveHistoryState();
@@ -190,16 +160,6 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     filterPriority,
     filterDueDate
   );
-
-  const clearCompletedTasks = async () => {
-    try {
-      await clearCompletedTasksMutation().unwrap();
-      setTasks((prevTasks) => prevTasks.filter((task) => !task.completed));
-      saveHistoryState();
-    } catch (error) {
-      console.error("Failed to clear completed tasks:", error);
-    }
-  };
 
   const undoLastAction = () => {
     if (history.length > 0) {
@@ -223,16 +183,14 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     <TasksContext.Provider
       value={{
         tasks: filteredTasks,
-        addTask,
-        deleteTask,
-        editTask,
+        setTasks,
         toggleTaskCompletion,
         setFilterStatus,
         setFilterPriority,
         setFilterDueDate,
-        clearCompletedTasks,
         undoLastAction,
         redoLastAction,
+        saveHistoryState,
       }}
     >
       {children}

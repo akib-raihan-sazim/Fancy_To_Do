@@ -2,6 +2,8 @@ import { Select, Group, Button, Container } from "@mantine/core";
 import { useState } from "react";
 import { DateInput } from "@mantine/dates";
 
+import { useClearCompletedTasksMutation } from "@/shared/redux/rtk-apis/apiSlice";
+
 import { useTasks } from "../TaskContext/TaskContext";
 import TaskItem from "../TaskItem/TaskItem";
 import { EFilterPriority, EFilterStatus, EPriority } from "../TaskContext/TaskContext.types";
@@ -12,7 +14,8 @@ const TaskList = () => {
     setFilterStatus,
     setFilterPriority,
     setFilterDueDate,
-    clearCompletedTasks,
+    setTasks,
+    saveHistoryState,
   } = useTasks();
 
   const [filterStatus, setFilterStatusState] = useState<EFilterStatus>(EFilterStatus.All);
@@ -38,10 +41,22 @@ const TaskList = () => {
     setFilterDueDateState(date);
   };
 
+  const [clearCompletedTasks] = useClearCompletedTasksMutation()
+
+  const handleClearCompletedTasks = async () => {
+    try {
+      await clearCompletedTasks().unwrap();
+      setTasks((prevTasks) => prevTasks.filter((task) => !task.completed));
+      saveHistoryState();
+    } catch (error) {
+      console.error("Failed to clear completed tasks:", error);
+    }
+  };
+
   return (
     <div className="taskList">
       <Container className="clear-task-btn-container">
-        <Button color="red" onClick={clearCompletedTasks}>
+        <Button color="red" onClick={handleClearCompletedTasks}>
           Clear Completed Tasks
         </Button>
       </Container>
