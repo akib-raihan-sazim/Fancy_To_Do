@@ -25,30 +25,6 @@ export const useTasks = () => {
   return context;
 };
 
-const saveTasksToLocalStorage = (tasks: ITask[]) => {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }
-};
-
-const loadTasksFromLocalStorage = (): ITask[] => {
-  if (typeof window !== "undefined") {
-    const tasks = localStorage.getItem("tasks");
-    if (!tasks) return [];
-    try {
-      const parsedTasks: ITask[] = JSON.parse(tasks);
-      return parsedTasks.map((task) => ({
-        ...task,
-        dueDate: task.dueDate ? new Date(task.dueDate) : null,
-      }));
-    } catch (error) {
-      console.error("Failed to parse tasks from localStorage:", error);
-      return [];
-    }
-  }
-  return [];
-};
-
 export const sortTasks = (tasks: ITask[]): ITask[] => {
   const priorityOrder: { [key in EFilterPriority]: number } = {
     [EFilterPriority.High]: 1,
@@ -78,18 +54,22 @@ export const filterTasks = (
   return tasks.filter((task) => {
     const statusMatch =
       filterStatus === EFilterStatus.All ||
-      (filterStatus === EFilterStatus.Active
-        ? !task.completed
-        : task.completed);
+      (filterStatus === EFilterStatus.Active ? !task.completed : task.completed);
 
     const priorityMatch =
-      filterPriority === EFilterPriority.All ||
-      (task.priority as unknown as EFilterPriority) === filterPriority;
+      filterPriority === EFilterPriority.All || (task.priority as unknown as EFilterPriority) === filterPriority;
 
-    const dueDateMatch =
-      filterDueDate === null || (task.dueDate && task.dueDate <= filterDueDate);
+    const dueDateMatch = () => {
+      if (filterDueDate === null) return true;
+      if (!task.dueDate) return false;
+      const taskDueDate = new Date(task.dueDate);
+      taskDueDate.setHours(0, 0, 0, 0);
+      const filterDate = new Date(filterDueDate);
+      filterDate.setHours(0, 0, 0, 0);
+      return taskDueDate <= filterDate;
+    };
 
-    return statusMatch && priorityMatch && dueDateMatch;
+    return statusMatch && priorityMatch && dueDateMatch();
   });
 };
 
@@ -111,12 +91,6 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const [history, setHistory] = useState<ITask[][]>([]);
 
   const [redoStack, setRedoStack] = useState<ITask[][]>([]);
-
-  useEffect(() => {
-    if (tasks.length > 0) {
-      saveTasksToLocalStorage(tasks);
-    }
-  }, [tasks]);
 
   useEffect(() => {
     if (fetchedTasks) {
@@ -148,6 +122,9 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
         setHistory,
         redoStack,
         setRedoStack,
+        filterStatus,
+        filterPriority,
+        filterDueDate,
       }}
     >
       {children}
