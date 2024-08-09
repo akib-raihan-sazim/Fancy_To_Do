@@ -6,10 +6,7 @@ import {
   useEffect,
 } from "react";
 
-import {
-  useGetTasksQuery,
-  useUpdateTaskMutation,
-} from "@/shared/redux/rtk-apis/apiSlice";
+import { useGetTasksQuery } from "@/shared/redux/rtk-apis/apiSlice";
 
 import {
   EFilterPriority,
@@ -101,8 +98,6 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   const { data: fetchedTasks } = useGetTasksQuery();
 
-  const [updateTask] = useUpdateTaskMutation();
-
   const [filterStatus, setFilterStatus] = useState<EFilterStatus>(
     EFilterStatus.All
   );
@@ -124,34 +119,13 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   }, [tasks]);
 
   useEffect(() => {
-    if(fetchedTasks){
+    if (fetchedTasks) {
       setTasks(sortTasks(fetchedTasks));
     }
   }, [fetchedTasks]);
 
   const saveHistoryState = () => {
     setHistory((prevHistory) => [...prevHistory, tasks]);
-  };
-
-  const toggleTaskCompletion = async (id: number) => {
-    try {
-      const taskToUpdate = tasks.find((task) => task.id === id);
-      if (taskToUpdate) {
-        const updatedTask = {
-          ...taskToUpdate,
-          completed: !taskToUpdate.completed,
-        };
-        const result = await updateTask(updatedTask).unwrap();
-        setTasks((prevTasks) =>
-          sortTasks(
-            prevTasks.map((task) => (task.id === result.id ? result : task))
-          )
-        );
-        saveHistoryState();
-      }
-    } catch (error) {
-      console.error("Failed to toggle task completion:", error);
-    }
   };
 
   const filteredTasks = filterTasks(
@@ -184,7 +158,6 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
       value={{
         tasks: filteredTasks,
         setTasks,
-        toggleTaskCompletion,
         setFilterStatus,
         setFilterPriority,
         setFilterDueDate,
