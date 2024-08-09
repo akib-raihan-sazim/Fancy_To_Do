@@ -69,7 +69,7 @@ export const sortTasks = (tasks: ITask[]): ITask[] => {
   });
 };
 
-const filterTasks = (
+export const filterTasks = (
   tasks: ITask[],
   filterStatus: EFilterStatus,
   filterPriority: EFilterPriority,
