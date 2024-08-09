@@ -6,7 +6,8 @@ import {
   useEffect,
 } from "react";
 
-import { useGetTasksQuery, useCreateTaskMutation } from "@/shared/redux/rtk-apis/apiSlice";
+import { useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation } from "@/shared/redux/rtk-apis/apiSlice";
+
 import { EFilterPriority, EFilterStatus, ITask, ITasksContext } from "./TaskContext.types";
 
 const TasksContext = createContext<ITasksContext | undefined>(undefined);
@@ -89,6 +90,8 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   const [createTask] = useCreateTaskMutation();
 
+  const [updateTask] = useUpdateTaskMutation();
+
   const [filterStatus, setFilterStatus] = useState<EFilterStatus>(EFilterStatus.All);
 
   const [filterPriority, setFilterPriority] = useState<EFilterPriority>(EFilterPriority.All);
@@ -131,15 +134,20 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     saveHistoryState();
   };
 
-  const editTask = (updatedTask: ITask) => {
-    setTasks((prevTasks) =>
-      sortTasks(
-        prevTasks.map((task) =>
-          task.id === updatedTask.id ? updatedTask : task
+  const editTask = async (updatedTask: ITask) => {
+    try {
+      const result = await updateTask(updatedTask).unwrap();
+      setTasks((prevTasks) =>
+        sortTasks(
+          prevTasks.map((task) =>
+            task.id === result.id ? result : task
+          )
         )
-      )
-    );
-    saveHistoryState();
+      );
+      saveHistoryState();
+    } catch (error) {
+      console.error("Failed to update task:", error);
+    }
   };
 
   const toggleTaskCompletion = (id: number) => {
