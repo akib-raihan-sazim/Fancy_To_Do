@@ -6,7 +6,14 @@ import {
   useEffect,
 } from "react";
 
-import { useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useClearCompletedTasksMutation } from "@/shared/redux/rtk-apis/apiSlice";
+import { 
+  useGetTasksQuery, 
+  useCreateTaskMutation, 
+  useUpdateTaskMutation, 
+  useClearCompletedTasksMutation, 
+  useDeleteTaskMutation 
+} from "@/shared/redux/rtk-apis/apiSlice";
+
 import { EFilterPriority, EFilterStatus, ITask, ITasksContext } from "./TaskContext.types";
 
 const TasksContext = createContext<ITasksContext | undefined>(undefined);
@@ -91,6 +98,8 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   const [updateTask] = useUpdateTaskMutation();
 
+  const [deleteOne] = useDeleteTaskMutation();
+
   const [clearCompletedTasksMutation] = useClearCompletedTasksMutation();
 
   const [filterStatus, setFilterStatus] = useState<EFilterStatus>(EFilterStatus.All);
@@ -130,9 +139,13 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const deleteTask = (id: number) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-    saveHistoryState();
+  const deleteTask = async (id: number) => {
+    try {
+      await deleteOne(id).unwrap();
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    } catch (error) {
+      console.error("Failed to delete task:", error);
+    }
   };
 
   const editTask = async (updatedTask: ITask) => {
