@@ -135,24 +135,6 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     filterDueDate
   );
 
-  const undoLastAction = () => {
-    if (history.length > 0) {
-      const previousState = history[history.length - 1];
-      setTasks(previousState);
-      setHistory(history.slice(0, -1));
-      setRedoStack((prevRedoStack) => [...prevRedoStack, tasks]);
-    }
-  };
-
-  const redoLastAction = () => {
-    if (redoStack.length > 0) {
-      const nextState = redoStack[redoStack.length - 1];
-      setHistory((prevHistory) => [...prevHistory, tasks]);
-      setTasks(nextState);
-      setRedoStack(redoStack.slice(0, -1));
-    }
-  };
-
   return (
     <TasksContext.Provider
       value={{
@@ -161,9 +143,11 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
         setFilterStatus,
         setFilterPriority,
         setFilterDueDate,
-        undoLastAction,
-        redoLastAction,
         saveHistoryState,
+        history,
+        setHistory,
+        redoStack,
+        setRedoStack,
       }}
     >
       {children}

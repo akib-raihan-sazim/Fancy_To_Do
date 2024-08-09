@@ -2,12 +2,14 @@ import {Dispatch, SetStateAction } from "react";
 
 export interface ITasksContext {
     tasks: ITask[];
+    history: ITask[][];
+    setHistory: Dispatch<SetStateAction<ITask[][]>>;
+    redoStack: ITask[][];
+    setRedoStack: Dispatch<SetStateAction<ITask[][]>>;
     setTasks: Dispatch<SetStateAction<ITask[]>>;
     setFilterStatus: (status: EFilterStatus) => void;
     setFilterPriority: (priority: EFilterPriority) => void;
     setFilterDueDate: (dueDate: Date | null) => void;
-    undoLastAction: () => void;
-    redoLastAction: () => void;
     saveHistoryState: () => void;
 }
 
