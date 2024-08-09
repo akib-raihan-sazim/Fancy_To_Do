@@ -6,8 +6,7 @@ import {
   useEffect,
 } from "react";
 
-import { useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation } from "@/shared/redux/rtk-apis/apiSlice";
-
+import { useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useClearCompletedTasksMutation } from "@/shared/redux/rtk-apis/apiSlice";
 import { EFilterPriority, EFilterStatus, ITask, ITasksContext } from "./TaskContext.types";
 
 const TasksContext = createContext<ITasksContext | undefined>(undefined);
@@ -91,6 +90,8 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const [createTask] = useCreateTaskMutation();
 
   const [updateTask] = useUpdateTaskMutation();
+
+  const [clearCompletedTasksMutation] = useClearCompletedTasksMutation();
 
   const [filterStatus, setFilterStatus] = useState<EFilterStatus>(EFilterStatus.All);
 
@@ -177,9 +178,14 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     filterDueDate
   );
 
-  const clearCompletedTasks = () => {
-    setTasks((prevTasks) => prevTasks.filter((task) => !task.completed));
-    saveHistoryState();
+  const clearCompletedTasks = async () => {
+    try {
+      await clearCompletedTasksMutation().unwrap();
+      setTasks((prevTasks) => prevTasks.filter((task) => !task.completed));
+      saveHistoryState();
+    } catch (error) {
+      console.error("Failed to clear completed tasks:", error);
+    }
   };
 
   const undoLastAction = () => {
